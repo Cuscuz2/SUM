@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUM - Sistema de Ubicación Metro | Guía de transporte en Medellín</title>
+    <meta name="description" content="Sistema de Ubicación Metro - Guía completa para moverte por Medellín de forma económica y eficiente. Encuentra estaciones, calcula rutas y horarios.">
+    <meta name="keywords" content="metro medellín, transporte medellín, rutas metro, estaciones metro, movilidad medellín">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph para compartir en redes sociales -->
+    <meta property="og:title" content="SUM - Sistema de Ubicación Metro Medellín">
+    <meta property="og:description" content="Guía completa para moverte por Medellín de forma económica y eficiente">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sum-medellin.com">
+    <meta property="og:image" content="https://sum-medellin.com/og-image.jpg">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>">
+    
+    <!-- Carga de Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Carga de Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- CSS Personalizado -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- 1. Encabezado Principal -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            
+            <!-- Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="text-3xl text-[#008037]">
+                    <i data-lucide="train-front-tunnel"></i>
+                </div>
+                <a href="#hero" class="text-xl sm:text-2xl font-extrabold tracking-tight hover:text-[#008037] transition">
+                    SUM
+                </a>
+            </div>
+
+            <!-- Navegación Desktop -->
+            <nav class="desktop-nav hidden md:flex flex-grow justify-center space-x-8 lg:space-x-12">
+                <a href="#mapa" class="hover:text-[#008037] font-medium transition duration-150 py-2">Sistema</a>
+                <a href="#buscador" class="hover:text-[#008037] font-medium transition duration-150 py-2">Buscar</a>
+                <a href="#calculadora" class="hover:text-[#008037] font-medium transition duration-150 py-2">Calcular Ruta</a>
+                <a href="#cultura" class="hover:text-[#008037] font-medium transition duration-150 py-2">Cultura Metro</a>
+                <a href="#horarios" class="hover:text-[#008037] font-medium transition duration-150 py-2">Horarios</a>
+            </nav>
+
+            <!-- Botón Iniciar Sesión Desktop -->
+            <button onclick="abrirLogin()" class="btn-login btn-login-desktop">
+                <i data-lucide="log-in" class="inline-block mr-2 w-4 h-4"></i>
+                Iniciar Sesión
+            </button>
+
+            <!-- Botón Menú Hamburguesa -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Menú Móvil -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <button class="close-btn" onclick="toggleMenu()" aria-label="Cerrar menú">✕</button>
+            <nav>
+                <a href="#mapa" onclick="toggleMenu()">Sistema</a>
+                <a href="#buscador" onclick="toggleMenu()">Buscar</a>
+                <a href="#calculadora" onclick="toggleMenu()">Calcular Ruta</a>
+                <a href="#cultura" onclick="toggleMenu()">Cultura Metro</a>
+                <a href="#horarios" onclick="toggleMenu()">Horarios</a>
+            </nav>
+            <button onclick="abrirLogin(); toggleMenu();" class="btn-login btn-login-mobile w-full text-center mt-6">
+                <i data-lucide="log-in" class="inline-block mr-2 w-4 h-4"></i>
+                Iniciar Sesión
+            </button>
+        </div>
+    </div>
+
+    <main>
+        <!-- 2. Hero Section -->
+        <section id="hero" class="relative h-[400px] sm:h-[500px] flex items-center justify-center text-center p-4" 
+                 style="background: linear-gradient(135deg, #008037 0%, #00a049 100%);">
+            <div class="absolute inset-0 opacity-10 bg-black"></div>
+            <div class="z-10 max-w-4xl mx-auto">
+                <h1 class="text-4xl sm:text-6xl font-black text-white mb-4 leading-tight">
+                    SUM
+                </h1>
+                <p class="text-xl sm:text-2xl text-white/90 font-light">
+                    Tu guía completa del sistema de transporte de la ciudad.
+                </p>
+                <p class="text-lg text-white/80 mt-4 max-w-2xl mx-auto">
+                    Muévete por Medellín de forma <span class="font-semibold">económica y eficiente</span>. Encuentra rutas, calcula tiempos y descubre el Metro.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Sección del Mapa del Sistema con SVG Interactivo -->
+        <section id="mapa" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 fade-in">
+                    Sistema de Transporte Integrado
+                </h2>
+                <p class="text-center text-gray-600 mb-6 max-w-2xl mx-auto fade-in">
+                    Mapa oficial del Metro de Medellín con todas las líneas y estaciones.
+                </p>
+
+                <!-- Logos de líneas -->
+                <div class="flex flex-wrap justify-center gap-3 mb-6 fade-in">
+                    <div class="linea-logo"><span class="dot" style="background: #2563eb;"></span> Línea A</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f97316;"></span> Línea B</div>
+                    <div class="linea-logo"><span class="dot" style="background: #84cc16;"></span> Línea T-A</div>
+                    <div class="linea-logo"><span class="dot" style="background: #9333ea;"></span> Línea J</div>
+                    <div class="linea-logo"><span class="dot" style="background: #eab308;"></span> Línea K</div>
+                    <div class="linea-logo"><span class="dot" style="background: #dc2626;"></span> Línea M</div>
+                    <div class="linea-logo"><span class="dot" style="background: #16a34a;"></span> Línea H</div>
+                    <div class="linea-logo"><span class="dot" style="background: #6b7280;"></span> Línea P</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f472b6;"></span> Línea O</div>
+                    <div class="linea-logo"><span class="dot" style="background: #14b8a6;"></span> Línea 1</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f59e0b;"></span> Línea 2</div>
+                </div>
+
+                <!-- Mapa SVG Interactivo -->
+                <div class="max-w-5xl mx-auto mapa-svg-container fade-in">
+                    <svg viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Fondo -->
+                        <rect width="800" height="620" fill="#f0f4f8" rx="12"/>
+                        
+                        <!-- Título dentro del SVG -->
+                        <text x="400" y="28" font-size="14" fill="#1a1a2e" font-weight="700" text-anchor="middle">🚇 Mapa simplificado del Metro de Medellín</text>
+                        <text x="400" y="46" font-size="11" fill="#6b7280" text-anchor="middle">🖱️ Pasa el cursor o haz clic en los puntos para ver las estaciones</text>
+                        
+                        <!-- Línea A - Metro (Azul #2563eb) -->
+                        <polyline points="80,100 160,100 240,100 320,100 400,100 480,100 560,100 640,100 720,100" 
+                                  stroke="#2563eb" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        
+                        <!-- Línea B - Metro (Naranja #f97316) -->
+                        <polyline points="400,100 400,180 400,260 400,340 400,420 400,500 400,540" 
+                                  stroke="#f97316" stroke-width="6" fill="none" stroke-linecap="round"/>
+                        
+                        <!-- Línea T-A - Tranvía (Verde claro #84cc16) -->
+                        <polyline points="400,100 340,100 280,100" 
+                                  stroke="#84cc16" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="8,4"/>
+                        
+                        <!-- Línea J - Metrocable (Morado #9333ea) -->
+                        <polyline points="400,540 360,540 320,540 280,540" 
+                                  stroke="#9333ea" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"/>
+                        
+                        <!-- Línea K - Metrocable (Amarillo #eab308) -->
+                        <polyline points="320,100 320,160 320,220" 
+                                  stroke="#eab308" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"/>
+                        
+                        <!-- Línea M - Metrocable (Rojo #dc2626) -->
+                        <polyline points="560,100 560,160 560,220" 
+                                  stroke="#dc2626" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"/>
+                        
+                        <!-- Línea P - Metrocable (Gris #6b7280) -->
+                        <polyline points="400,540 440,540 480,540 520,540" 
+                                  stroke="#6b7280" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="6,3"/>
+                        
+                        <!-- Línea H - Alimentador (Verde #16a34a) -->
+                        <polyline points="720,100 740,120 760,140 780,160" 
+                                  stroke="#16a34a" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="4,4"/>
+                        
+                        <!-- Línea O - Alimentador (Rosa #f472b6) -->
+                        <polyline points="400,100 420,120 440,140" 
+                                  stroke="#f472b6" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="4,4"/>
+                        
+                        <!-- Línea 1 - Alimentador (Verde azulado #14b8a6) -->
+                        <polyline points="400,100 430,90 460,80 490,70" 
+                                  stroke="#14b8a6" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="4,4"/>
+                        
+                        <!-- Línea 2 - Alimentador (Ámbar #f59e0b) -->
+                        <polyline points="400,100 430,110 460,120 490,130" 
+                                  stroke="#f59e0b" stroke-width="4" fill="none" stroke-linecap="round" stroke-dasharray="4,4"/>
+                        
+                        <!-- ===== ESTACIONES LÍNEA A (Metro) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Niquía')">
+                            <circle cx="80" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="55" y="75" width="50" height="18"/>
+                            <text class="nombre-estacion" x="80" y="88" text-anchor="middle">Niquía</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Bello')">
+                            <circle cx="160" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="135" y="75" width="50" height="18"/>
+                            <text class="nombre-estacion" x="160" y="88" text-anchor="middle">Bello</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Madera')">
+                            <circle cx="240" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="210" y="75" width="60" height="18"/>
+                            <text class="nombre-estacion" x="240" y="88" text-anchor="middle">Madera</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Acevedo')">
+                            <circle cx="320" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="290" y="75" width="60" height="18"/>
+                            <text class="nombre-estacion" x="320" y="88" text-anchor="middle">Acevedo</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Tricentenario')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="75" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="88" text-anchor="middle">Tricentenario</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Caribe')">
+                            <circle cx="480" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="450" y="75" width="60" height="18"/>
+                            <text class="nombre-estacion" x="480" y="88" text-anchor="middle">Caribe</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Universidad')">
+                            <circle cx="560" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="520" y="75" width="80" height="18"/>
+                            <text class="nombre-estacion" x="560" y="88" text-anchor="middle">Universidad</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Hospital')">
+                            <circle cx="640" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="610" y="75" width="60" height="18"/>
+                            <text class="nombre-estacion" x="640" y="88" text-anchor="middle">Hospital</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Prado')">
+                            <circle cx="720" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="690" y="75" width="60" height="18"/>
+                            <text class="nombre-estacion" x="720" y="88" text-anchor="middle">Prado</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Parque Berrio')">
+                            <circle cx="280" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="240" y="75" width="80" height="18"/>
+                            <text class="nombre-estacion" x="280" y="88" text-anchor="middle">Parque Berrio</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Antonio')">
+                            <circle cx="400" cy="100" r="8" fill="#2563eb" stroke="white" stroke-width="3"/>
+                            <rect class="nombre-estacion-bg" x="365" y="115" width="70" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">San Antonio</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Alpujarra')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="360" y="115" width="80" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Alpujarra</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Exposiciones')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="115" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Exposiciones</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Industriales')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="115" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Industriales</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Poblado')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="360" y="115" width="80" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Poblado</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Aguacatala')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="115" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Aguacatala</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Ayurá')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="360" y="115" width="80" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Ayurá</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Envigado')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="115" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Envigado</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Itagüí')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="360" y="115" width="80" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Itagüí</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Sabaneta')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="115" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">Sabaneta</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('La Estrella')">
+                            <circle cx="400" cy="100" r="7" fill="#2563eb" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="340" y="115" width="120" height="18"/>
+                            <text class="nombre-estacion" x="400" y="128" text-anchor="middle">La Estrella</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA B (Metro) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Cisneros')">
+                            <circle cx="400" cy="180" r="7" fill="#f97316" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="195" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="208" text-anchor="middle">Cisneros</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Suramericana')">
+                            <circle cx="400" cy="260" r="7" fill="#f97316" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="330" y="275" width="140" height="18"/>
+                            <text class="nombre-estacion" x="400" y="288" text-anchor="middle">Suramericana</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Estadio')">
+                            <circle cx="400" cy="340" r="7" fill="#f97316" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="360" y="355" width="80" height="18"/>
+                            <text class="nombre-estacion" x="400" y="368" text-anchor="middle">Estadio</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Floresta')">
+                            <circle cx="400" cy="420" r="7" fill="#f97316" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="355" y="435" width="90" height="18"/>
+                            <text class="nombre-estacion" x="400" y="448" text-anchor="middle">Floresta</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Santa Lucía')">
+                            <circle cx="400" cy="500" r="7" fill="#f97316" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="345" y="515" width="110" height="18"/>
+                            <text class="nombre-estacion" x="400" y="528" text-anchor="middle">Santa Lucía</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Javier')">
+                            <circle cx="400" cy="540" r="8" fill="#f97316" stroke="white" stroke-width="3"/>
+                            <rect class="nombre-estacion-bg" x="350" y="555" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="568" text-anchor="middle">San Javier</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA T-A (Tranvía) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Parque Berrio')">
+                            <circle cx="280" cy="100" r="6" fill="#84cc16" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="245" y="75" width="70" height="18"/>
+                            <text class="nombre-estacion" x="280" y="88" text-anchor="middle">Parque Berrio</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA J (Metrocable) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('La Aurora')">
+                            <circle cx="360" cy="540" r="6" fill="#9333ea" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="325" y="555" width="70" height="18"/>
+                            <text class="nombre-estacion" x="360" y="568" text-anchor="middle">La Aurora</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Vallejuelos')">
+                            <circle cx="320" cy="540" r="6" fill="#9333ea" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="285" y="555" width="70" height="18"/>
+                            <text class="nombre-estacion" x="320" y="568" text-anchor="middle">Vallejuelos</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Juan XXIII')">
+                            <circle cx="280" cy="540" r="6" fill="#9333ea" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="245" y="555" width="70" height="18"/>
+                            <text class="nombre-estacion" x="280" y="568" text-anchor="middle">Juan XXIII</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA K (Metrocable) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Andalucía')">
+                            <circle cx="320" cy="160" r="6" fill="#eab308" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="285" y="175" width="70" height="18"/>
+                            <text class="nombre-estacion" x="320" y="188" text-anchor="middle">Andalucía</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Santo Domingo')">
+                            <circle cx="320" cy="220" r="6" fill="#eab308" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="275" y="235" width="90" height="18"/>
+                            <text class="nombre-estacion" x="320" y="248" text-anchor="middle">Santo Domingo</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA M (Metrocable) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Miraflores')">
+                            <circle cx="560" cy="160" r="6" fill="#dc2626" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="525" y="175" width="70" height="18"/>
+                            <text class="nombre-estacion" x="560" y="188" text-anchor="middle">Miraflores</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('El Pinal')">
+                            <circle cx="560" cy="220" r="6" fill="#dc2626" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="530" y="235" width="60" height="18"/>
+                            <text class="nombre-estacion" x="560" y="248" text-anchor="middle">El Pinal</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Trece de Noviembre')">
+                            <circle cx="560" cy="100" r="6" fill="#dc2626" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="515" y="75" width="90" height="18"/>
+                            <text class="nombre-estacion" x="560" y="88" text-anchor="middle">Trece Nov</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA P (Metrocable) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Javier')">
+                            <circle cx="400" cy="540" r="6" fill="#6b7280" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="350" y="555" width="100" height="18"/>
+                            <text class="nombre-estacion" x="400" y="568" text-anchor="middle">San Javier</text>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('La Aurora')">
+                            <circle cx="360" cy="540" r="6" fill="#6b7280" stroke="white" stroke-width="2"/>
+                            <rect class="nombre-estacion-bg" x="325" y="555" width="70" height="18"/>
+                            <text class="nombre-estacion" x="360" y="568" text-anchor="middle">La Aurora</text>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA O (Alimentador) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Antonio')">
+                            <circle cx="400" cy="100" r="5" fill="#f472b6" stroke="white" stroke-width="2"/>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Alpujarra')">
+                            <circle cx="400" cy="100" r="5" fill="#f472b6" stroke="white" stroke-width="2"/>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA 1 (Alimentador) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Antonio')">
+                            <circle cx="400" cy="100" r="5" fill="#14b8a6" stroke="white" stroke-width="2"/>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Poblado')">
+                            <circle cx="400" cy="100" r="5" fill="#14b8a6" stroke="white" stroke-width="2"/>
+                        </g>
+                        
+                        <!-- ===== ESTACIONES LÍNEA 2 (Alimentador) ===== -->
+                        <g class="estacion" onclick="seleccionarEstacionSVG('San Antonio')">
+                            <circle cx="400" cy="100" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+                        </g>
+                        <g class="estacion" onclick="seleccionarEstacionSVG('Exposiciones')">
+                            <circle cx="400" cy="100" r="5" fill="#f59e0b" stroke="white" stroke-width="2"/>
+                        </g>
+                        
+                        <!-- ===== LEYENDA DENTRO DEL SVG ===== -->
+                        <rect x="20" y="580" width="760" height="30" fill="white" rx="8" opacity="0.95"/>
+                        <line x1="40" y1="595" x2="70" y2="595" stroke="#2563eb" stroke-width="4"/>
+                        <text x="75" y="595" font-size="9" fill="#4a4a6a" font-weight="600">Metro</text>
+                        
+                        <line x1="120" y1="595" x2="150" y2="595" stroke="#84cc16" stroke-width="3" stroke-dasharray="4,3"/>
+                        <text x="155" y="595" font-size="9" fill="#4a4a6a" font-weight="600">Tranvía</text>
+                        
+                                               <line x1="210" y1="595" x2="240" y2="595" stroke="#9333ea" stroke-width="3" stroke-dasharray="3,2"/>
+                        <text x="245" y="595" font-size="9" fill="#4a4a6a" font-weight="600">Metrocable</text>
+                        
+                        <line x1="310" y1="595" x2="340" y2="595" stroke="#16a34a" stroke-width="2" stroke-dasharray="2,2"/>
+                        <text x="345" y="595" font-size="9" fill="#4a4a6a" font-weight="600">Alimentador</text>
+                        
+                        <circle cx="420" cy="595" r="4" fill="#2563eb" stroke="white" stroke-width="1.5"/>
+                        <text x="430" y="595" font-size="9" fill="#4a4a6a" font-weight="600">Intercambio</text>
+                        
+                        <text x="510" y="595" font-size="9" fill="#9ca3af">🖱️ Clic para buscar</text>
+                        <text x="620" y="595" font-size="9" fill="#6b7280">● Metro ● Metrocable ● Alimentador</text>
+                    </svg>
+                </div>
+
+                <!-- Leyenda fuera del SVG -->
+                <div class="flex flex-wrap justify-center gap-3 mt-6 fade-in">
+                    <div class="linea-logo"><span class="dot" style="background: #2563eb;"></span> Línea A</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f97316;"></span> Línea B</div>
+                    <div class="linea-logo"><span class="dot" style="background: #84cc16;"></span> Línea T-A</div>
+                    <div class="linea-logo"><span class="dot" style="background: #9333ea;"></span> Línea J</div>
+                    <div class="linea-logo"><span class="dot" style="background: #eab308;"></span> Línea K</div>
+                    <div class="linea-logo"><span class="dot" style="background: #dc2626;"></span> Línea M</div>
+                    <div class="linea-logo"><span class="dot" style="background: #16a34a;"></span> Línea H</div>
+                    <div class="linea-logo"><span class="dot" style="background: #6b7280;"></span> Línea P</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f472b6;"></span> Línea O</div>
+                    <div class="linea-logo"><span class="dot" style="background: #14b8a6;"></span> Línea 1</div>
+                    <div class="linea-logo"><span class="dot" style="background: #f59e0b;"></span> Línea 2</div>
+                </div>
+
+                <p class="text-center text-sm text-gray-500 mt-4 fade-in">
+                    📍 Mapa interactivo con todas las líneas del Sistema de Transporte Integrado.
+                </p>
+            </div>
+        </section>
+
+        <!-- 4. Buscador de Estaciones -->
+        <section id="buscador" class="py-16 sm:py-24 bg-[#f8f9fa]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 fade-in">
+                    Buscador de Estaciones
+                </h2>
+                <p class="text-center text-gray-600 mb-8 fade-in">
+                    Encuentra tu estación más cercana o la que necesitas para tu viaje.
+                </p>
+
+                <div class="relative fade-in">
+                    <div class="relative">
+                        <i data-lucide="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" aria-hidden="true"></i>
+                        <input 
+                            type="text" 
+                            id="stationSearch" 
+                            placeholder="Buscar estación..." 
+                            class="search-input w-full pl-12 pr-12 py-4 rounded-xl border-2 focus:outline-none text-lg"
+                            aria-label="Buscar estaciones del Metro"
+                        >
+                        <button class="clear-search" id="clearSearch" aria-label="Limpiar búsqueda">✕</button>
+                    </div>
+                    
+                    <div id="stationResults" class="mt-4 max-h-80 overflow-y-auto rounded-xl border border-gray-200 shadow-lg hidden bg-white">
+                    </div>
+                    
+                    <div id="stationList" class="hidden">
+                        <!-- Línea A - Completa -->
+                        <div data-linea="A" data-nombre="Niquía" data-zona="1" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Bello" data-zona="1" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Madera" data-zona="1" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Acevedo" data-zona="1" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Tricentenario" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Caribe" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Universidad" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Hospital" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Prado" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Parque Berrio" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="San Antonio" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Alpujarra" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Exposiciones" data-zona="2" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Industriales" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Poblado" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Aguacatala" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Ayurá" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Envigado" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Itagüí" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="Sabaneta" data-zona="3" data-color="#2563eb"></div>
+                        <div data-linea="A" data-nombre="La Estrella" data-zona="3" data-color="#2563eb"></div>
+                        
+                        <!-- Línea B -->
+                        <div data-linea="B" data-nombre="San Antonio" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="Cisneros" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="Suramericana" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="Estadio" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="Floresta" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="Santa Lucía" data-zona="2" data-color="#f97316"></div>
+                        <div data-linea="B" data-nombre="San Javier" data-zona="2" data-color="#f97316"></div>
+                        
+                        <!-- Línea T-A -->
+                        <div data-linea="T-A" data-nombre="San Antonio" data-zona="2" data-color="#84cc16"></div>
+                        <div data-linea="T-A" data-nombre="Parque Berrio" data-zona="2" data-color="#84cc16"></div>
+                        
+                        <!-- Línea J -->
+                        <div data-linea="J" data-nombre="San Javier" data-zona="2" data-color="#9333ea"></div>
+                        <div data-linea="J" data-nombre="La Aurora" data-zona="2" data-color="#9333ea"></div>
+                        <div data-linea="J" data-nombre="Vallejuelos" data-zona="2" data-color="#9333ea"></div>
+                        <div data-linea="J" data-nombre="Juan XXIII" data-zona="2" data-color="#9333ea"></div>
+                        
+                        <!-- Línea K -->
+                        <div data-linea="K" data-nombre="Acevedo" data-zona="1" data-color="#eab308"></div>
+                        <div data-linea="K" data-nombre="Andalucía" data-zona="1" data-color="#eab308"></div>
+                        <div data-linea="K" data-nombre="Santo Domingo" data-zona="1" data-color="#eab308"></div>
+                        
+                        <!-- Línea M -->
+                        <div data-linea="M" data-nombre="Miraflores" data-zona="2" data-color="#dc2626"></div>
+                        <div data-linea="M" data-nombre="El Pinal" data-zona="2" data-color="#dc2626"></div>
+                        <div data-linea="M" data-nombre="Trece de Noviembre" data-zona="2" data-color="#dc2626"></div>
+                        
+                        <!-- Línea H -->
+                        <div data-linea="H" data-nombre="La Estrella" data-zona="3" data-color="#16a34a"></div>
+                        <div data-linea="H" data-nombre="Sabaneta" data-zona="3" data-color="#16a34a"></div>
+                        <div data-linea="H" data-nombre="Itagüí" data-zona="3" data-color="#16a34a"></div>
+                        
+                        <!-- Línea P -->
+                        <div data-linea="P" data-nombre="San Javier" data-zona="2" data-color="#6b7280"></div>
+                        <div data-linea="P" data-nombre="La Aurora" data-zona="2" data-color="#6b7280"></div>
+                        
+                        <!-- Línea O -->
+                        <div data-linea="O" data-nombre="San Antonio" data-zona="2" data-color="#f472b6"></div>
+                        <div data-linea="O" data-nombre="Alpujarra" data-zona="2" data-color="#f472b6"></div>
+                        
+                        <!-- Línea 1 -->
+                        <div data-linea="1" data-nombre="San Antonio" data-zona="2" data-color="#14b8a6"></div>
+                        <div data-linea="1" data-nombre="Poblado" data-zona="3" data-color="#14b8a6"></div>
+                        
+                        <!-- Línea 2 -->
+                        <div data-linea="2" data-nombre="San Antonio" data-zona="2" data-color="#f59e0b"></div>
+                        <div data-linea="2" data-nombre="Exposiciones" data-zona="2" data-color="#f59e0b"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Calculadora de Ruta -->
+        <section id="calculadora" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 fade-in">
+                    Calculadora de Ruta
+                </h2>
+                <p class="text-center text-gray-600 mb-8 fade-in">
+                    Estima el tiempo de tu viaje entre dos estaciones.
+                </p>
+
+                <div class="bg-[#f8f9fa] p-6 rounded-xl shadow-xl fade-in">
+                    <div class="demo-warning">
+                        <i data-lucide="info" class="w-4 h-4 inline-block" aria-hidden="true"></i>
+                        ⚠️ Esta es una simulación educativa. Las tarifas oficiales del Metro de Medellín son fijas y puedes consultarlas en la página oficial.
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="origen" class="block text-sm font-medium mb-2">Estación de origen</label>
+                            <select id="origen" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-[#008037] focus:outline-none bg-white">
+                                <option value="">Selecciona una estación</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="destino" class="block text-sm font-medium mb-2">Estación de destino</label>
+                            <select id="destino" class="w-full p-3 rounded-lg border-2 border-gray-200 focus:border-[#008037] focus:outline-none bg-white">
+                                <option value="">Selecciona una estación</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button id="calcularRuta" class="btn-primary text-white font-semibold py-3 px-8 rounded-lg mt-6 w-full transition duration-300">
+                        <i data-lucide="route" class="inline-block mr-2 w-5 h-5" aria-hidden="true"></i>
+                        Calcular Ruta
+                    </button>
+
+                    <div id="resultadoRuta" class="mt-6 p-4 rounded-lg border-2 border-[#008037] hidden bg-white">
+                        <h4 class="font-bold text-[#008037] text-lg mb-2">📊 Resultados del viaje</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="calc-result bg-[#f8f9fa] p-3 rounded-lg shadow">
+                                <p class="text-sm text-gray-500">Distancia estimada</p>
+                                <p id="distancia" class="text-xl font-bold text-[#008037]">--</p>
+                            </div>
+                            <div class="calc-result bg-[#f8f9fa] p-3 rounded-lg shadow">
+                                <p class="text-sm text-gray-500">Tiempo estimado</p>
+                                <p id="tiempo" class="text-xl font-bold text-[#008037]">--</p>
+                            </div>
+                            <div class="calc-result bg-[#f8f9fa] p-3 rounded-lg shadow col-span-2">
+                                <p class="text-sm text-gray-500">Tarifa oficial</p>
+                                <p id="costo" class="text-xl font-bold text-[#008037]">$2,800 COP</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-4 text-center">
+                            * Tarifa única del Metro de Medellín. 
+                            <a href="https://www.metrodemedellin.gov.co/" target="_blank" rel="noopener noreferrer" class="text-[#008037] hover:underline">
+                                Consulta tarifas oficiales aquí →
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Sección de Reglas y Cultura Metro -->
+        <section id="cultura" class="py-16 sm:py-24 bg-[#f8f9fa]">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 fade-in">
+                    Reglas y Cultura Metro
+                </h2>
+                <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto fade-in">
+                    Consejos para un viaje respetuoso y agradable en el Metro de Medellín.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="hand-heart" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">Respeto</h3>
+                        <p class="text-gray-600">Trata a todos con amabilidad y respeta el espacio de los demás usuarios y empleados.</p>
+                    </div>
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="clock" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">Puntualidad</h3>
+                        <p class="text-gray-600">Prepárate con tiempo y ayuda a que el servicio fluya de manera eficiente.</p>
+                    </div>
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="leaf" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">Cuidado del Entorno</h3>
+                        <p class="text-gray-600">Mantén limpias las estaciones, vagones y zonas aledañas. Cuida la infraestructura.</p>
+                    </div>
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="volume-x" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">Silencio</h3>
+                        <p class="text-gray-600">Evita ruidos altos y mantén tus conversaciones en voz baja. Piensa en los demás.</p>
+                    </div>
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="utensils-crossed" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">No Comer</h3>
+                        <p class="text-gray-600">Procura no consumir alimentos ni bebidas dentro del sistema de transporte.</p>
+                    </div>
+                    <div class="card-hover p-6 rounded-xl shadow-xl transition duration-300 border-b-4 border-[#008037] fade-in">
+                        <i data-lucide="smoke-off" class="w-8 h-8 text-[#008037] mb-3" aria-hidden="true"></i>
+                        <h3 class="text-xl font-semibold mb-2">No Fumar</h3>
+                        <p class="text-gray-600">Está prohibido el uso de cigarrillos o vapeadores en todas las instalaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. Sección de Horarios de Operación -->
+        <section id="horarios" class="py-16 sm:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+                <h2 class="text-3xl sm:text-4xl font-bold text-center mb-4 fade-in">
+                    Horarios de Operación
+                </h2>
+                <p class="text-center text-gray-600 mb-12 fade-in">
+                    Los horarios pueden variar ligeramente, pero generalmente son:
+                </p>
+                
+                <div class="overflow-x-auto rounded-xl shadow-2xl border border-gray-200 fade-in">
+                    <table class="min-w-full border-collapse bg-white">
+                        <thead>
+                            <tr class="bg-[#008037] text-white text-left text-sm uppercase">
+                                <th class="py-4 px-6 font-semibold rounded-tl-xl w-1/4">Días</th>
+                                <th class="py-4 px-6 font-semibold w-2/5">Líneas</th>
+                                <th class="py-4 px-6 font-semibold">Horario de Servicio</th>
+                                <th class="py-4 px-6 font-semibold rounded-tr-xl">Horario de Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150">
+                                <td class="py-4 px-6 font-bold text-[#008037]">Lunes a Sábados</td>
+                                <td class="py-4 px-6">A, B, T-A, H, J, K, M, O, P, 1, 2</td>
+                                <td class="py-4 px-6">4:30 a.m.</td>
+                                <td class="py-4 px-6">11:00 p.m.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150">
+                                <td class="py-4 px-6 font-bold text-[#008037]">Domingos y Festivos</td>
+                                <td class="py-4 px-6">A, B, T-A, O, 1, 2</td>
+                                <td class="py-4 px-6">5:00 a.m.</td>
+                                <td class="py-4 px-6">10:00 p.m.</td>
+                            </tr>
+                            <tr class="border-b border-gray-100 hover:bg-gray-50 transition duration-150">
+                                <td class="py-4 px-6 font-bold text-[#008037]">Domingos y Festivos</td>
+                                <td class="py-4 px-6">K</td>
+                                <td class="py-4 px-6">8:30 a.m.</td>
+                                <td class="py-4 px-6">10:00 p.m.</td>
+                            </tr>
+                            <tr class="hover:bg-gray-50 transition duration-150">
+                                <td class="py-4 px-6 font-bold text-[#008037]">Domingos y Festivos</td>
+                                <td class="py-4 px-6">H, J, M, P</td>
+                                <td class="py-4 px-6">9:00 a.m.</td>
+                                <td class="py-4 px-6">10:00 p.m.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-center text-sm text-gray-500 mt-6 fade-in">
+                    *Horarios sujetos a cambios por condiciones operacionales o eventos especiales. 
+                    <a href="https://www.metrodemedellin.gov.co/" target="_blank" rel="noopener noreferrer" class="text-[#008037] hover:underline">
+                        Consulta horarios oficiales aquí →
+                    </a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- 8. Pie de Página -->
+    <footer class="bg-[#1a1a2e] text-white py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                
+                <!-- Columna 1: Contacto -->
+                <div>
+                    <h4 class="text-lg font-bold mb-4 border-b border-[#008037] pb-2 inline-block">Contacto</h4>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><i data-lucide="mail" class="w-4 h-4 inline-block mr-2" aria-hidden="true"></i> info@metrodemedellin.gov.co</li>
+                        <li><i data-lucide="phone" class="w-4 h-4 inline-block mr-2" aria-hidden="true"></i> Línea de Atención: (604) 444 9555</li>
+                        <li><i data-lucide="map-pin" class="w-4 h-4 inline-block mr-2" aria-hidden="true"></i> Sede principal: Medellín, Colombia</li>
+                    </ul>
+                </div>
+
+                <!-- Columna 2: Redes Sociales -->
+                <div class="md:text-center">
+                    <h4 class="text-lg font-bold mb-4 border-b border-[#008037] pb-2 inline-block">Síguenos</h4>
+                    <div class="flex justify-center md:justify-center space-x-4 mt-2">
+                        <a href="https://www.instagram.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-[#00a049] transition duration-300" aria-label="Instagram">
+                            <i data-lucide="instagram" class="w-6 h-6"></i>
+                        </a>
+                        <a href="https://x.com/metrodemedellin" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-[#00a049] transition duration-300" aria-label="Twitter">
+                            <i data-lucide="twitter" class="w-6 h-6"></i>
+                        </a>
+                        <a href="https://www.facebook.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-[#00a049] transition duration-300" aria-label="Facebook">
+                            <i data-lucide="facebook" class="w-6 h-6"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@metrodemedellin/videos" target="_blank" rel="noopener noreferrer" class="text-green-300 hover:text-[#00a049] transition duration-300" aria-label="YouTube">
+                            <i data-lucide="youtube" class="w-6 h-6"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Columna 3: Legal -->
+                <div class="md:text-right">
+                    <h4 class="text-lg font-bold mb-4 border-b border-[#008037] pb-2 inline-block">Legal</h4>
+                    <ul class="space-y-2 text-sm text-gray-300">
+                        <li><a href="#" class="hover:text-[#00a049] transition">Términos y Condiciones</a></li>
+                        <li><a href="#" class="hover:text-[#00a049] transition">Política de Privacidad</a></li>
+                        <li><a href="#" class="hover:text-[#00a049] transition">Transparencia</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10 border-t border-gray-700 pt-6">
+                <p class="text-sm text-gray-400">© 2025 Sistema de Ubicación Metro. Todos los derechos reservados. | Desarrollado por JJSS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Inicio de Sesión -->
+    <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarLogin()" aria-label="Cerrar">&times;</button>
+            <h2 id="loginTitle">Iniciar Sesión</h2>
+            
+            <div class="demo-warning">
+                <i data-lucide="info" class="w-4 h-4 inline-block" aria-hidden="true"></i>
+                🧪 Esta es una demo. Cualquier correo y contraseña de 6+ caracteres funciona.
+            </div>
+            
+            <form id="loginForm" onsubmit="iniciarSesion(event)">
+                <div class="input-group">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                
+                <div class="error-msg" id="loginError">Correo o contraseña incorrectos</div>
+                
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="log-in" class="inline-block mr-2 w-4 h-4" aria-hidden="true"></i>
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="#" onclick="abrirRegistro()">Regístrate aquí</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarRegistro()" aria-label="Cerrar">&times;</button>
+            <h2 id="registerTitle">Crear Cuenta</h2>
+            
+            <div class="demo-warning">
+                <i data-lucide="info" class="w-4 h-4 inline-block" aria-hidden="true"></i>
+                🧪 Demo: Los datos no se guardan realmente. Solo es una simulación.
+            </div>
+            
+            <form id="registerForm" onsubmit="registrarUsuario(event)">
+                <div class="input-group">
+                    <label for="regNombre">Nombre completo</label>
+                    <input type="text" id="regNombre" placeholder="Juan Pérez" required>
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Correo electrónico</label>
+                    <input type="email" id="regEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="input-group">
+                    <label for="regConfirmPassword">Confirmar contraseña</label>
+                    <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                </div>
+                
+                <div class="error-msg" id="registerError">Las contraseñas no coinciden</div>
+                
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="user-plus" class="inline-block mr-2 w-4 h-4" aria-hidden="true"></i>
+                    Registrarse
+                </button>
+            </form>
+            
+            <div class="register-link">
+                ¿Ya tienes cuenta? <a href="#" onclick="abrirLogin()">Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
