@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUM - Sistema de Ubicación Metro | Guía de transporte en Medellín</title>
+    <meta name="description" content="Sistema de Ubicación Metro - Guía completa para moverte por Medellín de forma económica y eficiente.">
+    <meta name="keywords" content="metro medellín, transporte medellín, rutas metro, estaciones metro, movilidad medellín">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="SUM - Sistema de Ubicación Metro Medellín">
+    <meta property="og:description" content="Guía completa para moverte por Medellín de forma económica y eficiente">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sum-medellin.com">
+    <meta property="og:image" content="https://sum-medellin.com/og-image.jpg">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚇</text></svg>">
+
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Iconos -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- CSS Personalizado (CSS puro, sin frameworks) -->
+    <link rel="stylesheet" href="prueba2.css">
+</head>
+<body>
+
+    <!-- 1. Encabezado Principal -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon"><i data-lucide="train-front-tunnel"></i></span>
+                <a href="#hero" class="logo-text">SUM</a>
+            </div>
+
+            <nav class="metro-nav">
+                <span class="metro-nav-rail" aria-hidden="true"></span>
+                <span class="metro-nav-train" aria-hidden="true"></span>
+                <a href="#cultura" class="metro-stop" data-line="a">
+                    <span class="stop-dot"></span>
+                    <span class="stop-label">Cultura Metro</span>
+                </a>
+                <a href="#horarios" class="metro-stop" data-line="b">
+                    <span class="stop-dot"></span>
+                    <span class="stop-label">Horarios</span>
+                </a>
+            </nav>
+
+            <button onclick="abrirLogin()" class="btn-login btn-login-desktop">
+                <i data-lucide="log-in" class="icon-sm"></i>
+                Iniciar Sesión
+            </button>
+
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Menú Móvil -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <button class="close-btn" onclick="toggleMenu()" aria-label="Cerrar menú">✕</button>
+
+            <div class="logo mobile-logo">
+                <span class="logo-icon"><i data-lucide="train-front-tunnel"></i></span>
+                <span class="logo-text">SUM</span>
+            </div>
+
+            <nav class="metro-nav metro-nav-vertical">
+                <span class="metro-nav-rail" aria-hidden="true"></span>
+                <span class="metro-nav-train" aria-hidden="true"></span>
+                <a href="#cultura" onclick="toggleMenu()" class="metro-stop" data-line="a">
+                    <span class="stop-dot"></span>
+                    <span class="stop-label">Cultura Metro</span>
+                </a>
+                <a href="#horarios" onclick="toggleMenu()" class="metro-stop" data-line="b">
+                    <span class="stop-dot"></span>
+                    <span class="stop-label">Horarios</span>
+                </a>
+            </nav>
+
+            <button onclick="abrirLogin(); toggleMenu();" class="btn-login btn-login-mobile">
+                <i data-lucide="log-in" class="icon-sm"></i>
+                Iniciar Sesión
+            </button>
+        </div>
+    </div>
+
+    <main>
+        <!-- 2. Hero -->
+        <section id="hero" class="hero">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">SUM</h1>
+                <p class="hero-subtitle">Tu guía completa del sistema de transporte de la ciudad.</p>
+                <p class="hero-description">
+                    Muévete por Medellín de forma <strong>económica y eficiente</strong>. Encuentra rutas, calcula tiempos y descubre el Metro.
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Reglas y Cultura Metro -->
+        <section id="cultura" class="section section-alt">
+            <div class="container">
+                <h2 class="section-title fade-in">Reglas y Cultura Metro</h2>
+                <p class="section-subtitle fade-in">Consejos para un viaje respetuoso y agradable en el Metro de Medellín.</p>
+
+                <div class="cards-grid">
+                    <div class="card fade-in">
+                        <i data-lucide="hand-heart" class="card-icon"></i>
+                        <h3 class="card-title">Respeto</h3>
+                        <p class="card-text">Trata a todos con amabilidad y respeta el espacio de los demás usuarios y empleados.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <i data-lucide="clock" class="card-icon"></i>
+                        <h3 class="card-title">Puntualidad</h3>
+                        <p class="card-text">Prepárate con tiempo y ayuda a que el servicio fluya de manera eficiente.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <i data-lucide="leaf" class="card-icon"></i>
+                        <h3 class="card-title">Cuidado del Entorno</h3>
+                        <p class="card-text">Mantén limpias las estaciones, vagones y zonas aledañas. Cuida la infraestructura.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <i data-lucide="volume-x" class="card-icon"></i>
+                        <h3 class="card-title">Silencio</h3>
+                        <p class="card-text">Evita ruidos altos y mantén tus conversaciones en voz baja. Piensa en los demás.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <i data-lucide="utensils-crossed" class="card-icon"></i>
+                        <h3 class="card-title">No Comer</h3>
+                        <p class="card-text">Procura no consumir alimentos ni bebidas dentro del sistema de transporte.</p>
+                    </div>
+                    <div class="card fade-in">
+                        <i data-lucide="smoke-off" class="card-icon"></i>
+                        <h3 class="card-title">No Fumar</h3>
+                        <p class="card-text">Está prohibido el uso de cigarrillos o vapeadores en todas las instalaciones.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Horarios de Operación -->
+        <section id="horarios" class="section">
+            <div class="container container-narrow">
+                <h2 class="section-title fade-in">Horarios de Operación</h2>
+                <p class="section-subtitle fade-in">Los horarios pueden variar ligeramente, pero generalmente son:</p>
+
+                <div class="table-wrapper fade-in">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Días</th>
+                                <th>Líneas</th>
+                                <th>Horario de Servicio</th>
+                                <th>Horario de Fin</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cell-highlight">Lunes a Sábados</td>
+                                <td>A, B, T-A, H, J, K, M, O, P, 1, 2</td>
+                                <td>4:30 a.m.</td>
+                                <td>11:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y Festivos</td>
+                                <td>A, B, T-A, O, 1, 2</td>
+                                <td>5:00 a.m.</td>
+                                <td>10:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y Festivos</td>
+                                <td>K</td>
+                                <td>8:30 a.m.</td>
+                                <td>10:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y Festivos</td>
+                                <td>H, J, M, P</td>
+                                <td>9:00 a.m.</td>
+                                <td>10:00 p.m.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="table-note fade-in">
+                    *Horarios sujetos a cambios por condiciones operacionales o eventos especiales.
+                    <a href="https://www.metrodemedellin.gov.co/" target="_blank" rel="noopener noreferrer">Consulta horarios oficiales aquí →</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- 5. Pie de Página -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4 class="footer-title">Contacto</h4>
+                    <ul class="footer-list">
+                        <li><i data-lucide="mail" class="icon-sm"></i> info@metrodemedellin.gov.co</li>
+                        <li><i data-lucide="phone" class="icon-sm"></i> Línea de Atención: (604) 444 9555</li>
+                        <li><i data-lucide="map-pin" class="icon-sm"></i> Sede principal: Medellín, Colombia</li>
+                    </ul>
+                </div>
+
+                <div class="footer-col footer-col-center">
+                    <h4 class="footer-title">Síguenos</h4>
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i data-lucide="instagram"></i></a>
+                        <a href="https://x.com/metrodemedellin" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                        <a href="https://www.facebook.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i data-lucide="facebook"></i></a>
+                        <a href="https://www.youtube.com/@metrodemedellin/videos" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i data-lucide="youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-col footer-col-right">
+                    <h4 class="footer-title">Legal</h4>
+                    <ul class="footer-list">
+                        <li><a href="#">Términos y Condiciones</a></li>
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Transparencia</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2025 Sistema de Ubicación Metro. Todos los derechos reservados. | Desarrollado por JJSS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Inicio de Sesión -->
+    <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarLogin()" aria-label="Cerrar">&times;</button>
+            <h2 id="loginTitle">Iniciar Sesión</h2>
+
+            <div class="demo-warning">
+                <i data-lucide="info" class="icon-sm"></i>
+                🧪 Esta es una demo. Cualquier correo y contraseña de 6+ caracteres funciona.
+            </div>
+
+            <form id="loginForm" onsubmit="iniciarSesion(event)">
+                <div class="input-group">
+                    <label for="loginEmail">Correo electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+
+                <div class="error-msg" id="loginError">Correo o contraseña incorrectos</div>
+
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="log-in" class="icon-sm"></i>
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="#" onclick="abrirRegistro()">Regístrate aquí</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Registro -->
+    <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+        <div class="modal-box">
+            <button class="modal-close" onclick="cerrarRegistro()" aria-label="Cerrar">&times;</button>
+            <h2 id="registerTitle">Crear Cuenta</h2>
+
+            <div class="demo-warning">
+                <i data-lucide="info" class="icon-sm"></i>
+                🧪 Demo: Los datos no se guardan realmente. Solo es una simulación.
+            </div>
+
+            <form id="registerForm" onsubmit="registrarUsuario(event)">
+                <div class="input-group">
+                    <label for="regNombre">Nombre completo</label>
+                    <input type="text" id="regNombre" placeholder="Juan Pérez" required>
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Correo electrónico</label>
+                    <input type="email" id="regEmail" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="regPassword">Contraseña</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                </div>
+                <div class="input-group">
+                    <label for="regConfirmPassword">Confirmar contraseña</label>
+                    <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                </div>
+
+                <div class="error-msg" id="registerError">Las contraseñas no coinciden</div>
+
+                <button type="submit" class="btn-submit">
+                    <i data-lucide="user-plus" class="icon-sm"></i>
+                    Registrarse
+                </button>
+            </form>
+
+            <div class="register-link">
+                ¿Ya tienes cuenta? <a href="#" onclick="abrirLogin()">Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="prueba2.js"></script>
+</body>
+</html>
