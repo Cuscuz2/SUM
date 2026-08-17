@@ -1,12 +1,9 @@
-// SUM - Sistema de Ubicación Metro
-// JavaScript puro, sin dependencias (aparte de Lucide para los íconos)
-
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
     setupScrollReveal();
 });
 
-/* ---------- Menú móvil ---------- */
+/* ---------- Menú Móvil ---------- */
 function toggleMenu() {
     const menu = document.getElementById('mobileMenu');
     const toggle = document.getElementById('menuToggle');
