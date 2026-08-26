@@ -606,7 +606,7 @@ function mostrarToast(mensaje) {
     const toast = document.getElementById('toast');
     if (!toast) return;
     toast.textContent = mensaje;
-    toast.classList.add('show');
+    toast.classList.add('pipi');
 
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
