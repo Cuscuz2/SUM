@@ -743,6 +743,22 @@ img.card-icon { width: 30px; height: 30px; object-fit: contain; }
 .input-group input:focus { border-color: var(--verde-rieles); }
 .input-group input::placeholder { color: #B3BAB6; }
 
+.input-password-wrapper { position: relative; }
+.input-password-wrapper input { padding-right: 34px; }
+.toggle-password {
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gris-concreto);
+    padding: 4px;
+}
+.toggle-password:hover { color: var(--negro-anden); }
+.toggle-password svg { width: 18px; height: 18px; pointer-events: none; }
+
 .forgot-link { text-align: right; margin-bottom: 18px; margin-top: -6px; }
 .forgot-link a { font-size: 0.85rem; color: var(--verde-rieles); font-weight: 600; }
 .forgot-link a:hover { color: var(--verde-senal); }
