@@ -14,6 +14,18 @@ function toggleMenu() {
     document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
 }
 
+/* ---------- Mostrar/Ocultar contraseña ---------- */
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const mostrando = input.type === 'text';
+
+    input.type = mostrando ? 'password' : 'text';
+    btn.innerHTML = `<i data-lucide="${mostrando ? 'eye' : 'eye-off'}"></i>`;
+    btn.setAttribute('aria-label', mostrando ? 'Mostrar contraseña' : 'Ocultar contraseña');
+
+    if (window.lucide) lucide.createIcons();
+}
+
 /* ---------- Modales ---------- */
 function abrirRecuperar() {
     cerrarLogin();
