@@ -310,7 +310,12 @@
                 </div>
                 <div class="input-group">
                     <label for="loginPassword">Contraseña</label>
-                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)" aria-label="Mostrar contraseña">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="forgot-link">
@@ -353,11 +358,21 @@
                 </div>
                 <div class="input-group">
                     <label for="regPassword">Contraseña</label>
-                    <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)" aria-label="Mostrar contraseña">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="regConfirmPassword">Confirmar contraseña</label>
-                    <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="regConfirmPassword" placeholder="••••••••" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('regConfirmPassword', this)" aria-label="Mostrar contraseña">
+                            <i data-lucide="eye"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="error-msg" id="registerError">Las contraseñas no coinciden</div>
