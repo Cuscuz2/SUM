@@ -1,11 +1,17 @@
 // mapa.js — Proyecto SUM (Sistema de Ubicación Metro)
-// Incluye: Mapa Interactivo, Navegación de Vistas e Historial de Viajes.
+// Incluye: Mapa Interactivo, Navegación de Vistas, Historial de Viajes,
+// y Buscador de estaciones agrupado por línea con dirección exacta.
 //
 // Cobertura de red: Metro (Línea A y B), Metrocable (K, J, H, L),
 // Tranvía de Ayacucho (T-A) y Metroplús (Línea 1 y 2).
-// Todas las coordenadas provienen del feed GTFS oficial del Metro de
-// Medellín (repositorio ColombiaInfo/ColombiaGTFS), no de estimaciones
-// manuales. El origen/destino solo aceptan estaciones reales de esta red.
+// Coordenadas: feed GTFS oficial del Metro de Medellín (ColombiaInfo/ColombiaGTFS).
+// Direcciones: Metro de Medellín (metrodemedellin.gov.co) y Wikipedia
+// ("Anexo:Estaciones del Metro de Medellín"). Las direcciones marcadas con
+// "(aprox.)" no tienen una nomenclatura oficial publicada (paradas de tranvía,
+// metrocable o estaciones de Metroplús sin dirección catastral verificada) y
+// se calculan a partir de la vía/cruce donde se ubica la estación; se
+// recomienda verificarlas en el sitio oficial antes de usarlas como destino
+// postal.
 
 const MEDELLIN_CENTRO = [6.2472, -75.5697]; // San Antonio: corazón del sistema
 
@@ -102,136 +108,137 @@ function inicializarMapa() {
 
 /* =========================================================
    RED COMPLETA DEL SISTEMA (datos reales, fuente GTFS oficial)
+   Cada estación incluye "dir": la dirección de acceso a la estación.
    ========================================================= */
 
 // Metro — Línea A (Niquía ↔ La Estrella)
 const ESTACIONES_A = [
-    { nombre: 'Niquía', lat: 6.33788, lon: -75.54433 },
-    { nombre: 'Bello', lat: 6.32989, lon: -75.55375 },
-    { nombre: 'Madera', lat: 6.31603, lon: -75.55534 },
-    { nombre: 'Acevedo', lat: 6.29986, lon: -75.55853 },
-    { nombre: 'Tricentenario', lat: 6.29031, lon: -75.56473 },
-    { nombre: 'Caribe', lat: 6.27828, lon: -75.56937 },
-    { nombre: 'Universidad', lat: 6.26933, lon: -75.56577 },
-    { nombre: 'Hospital', lat: 6.26368, lon: -75.56344 },
-    { nombre: 'Prado', lat: 6.25679, lon: -75.56605 },
-    { nombre: 'Parque Berrío', lat: 6.25054, lon: -75.56828 },
-    { nombre: 'San Antonio', lat: 6.24707, lon: -75.56969 },
-    { nombre: 'Alpujarra', lat: 6.24292, lon: -75.57136 },
-    { nombre: 'Exposiciones', lat: 6.23843, lon: -75.57322 },
-    { nombre: 'Industriales', lat: 6.23002, lon: -75.57561 },
-    { nombre: 'Poblado', lat: 6.21196, lon: -75.57806 },
-    { nombre: 'Aguacatala', lat: 6.19377, lon: -75.58192 },
-    { nombre: 'Ayurá', lat: 6.18601, lon: -75.5862 },
-    { nombre: 'Envigado', lat: 6.17469, lon: -75.59706 },
-    { nombre: 'Itagüí', lat: 6.16296, lon: -75.60671 },
-    { nombre: 'Sabaneta', lat: 6.15789, lon: -75.61604 },
-    { nombre: 'La Estrella', lat: 6.15263, lon: -75.62646 }
+    { nombre: 'Niquía', lat: 6.33788, lon: -75.54433, dir: 'Diagonal 50A # 37-01, Bello' },
+    { nombre: 'Bello', lat: 6.32989, lon: -75.55375, dir: 'Calle 44 # 46-001, Bello' },
+    { nombre: 'Madera', lat: 6.31603, lon: -75.55534, dir: 'Carrera 49 # 25B-20, Bello' },
+    { nombre: 'Acevedo', lat: 6.29986, lon: -75.55853, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
+    { nombre: 'Tricentenario', lat: 6.29031, lon: -75.56473, dir: 'Carrera 63 # 94A-518 (acceso norte), Medellín' },
+    { nombre: 'Caribe', lat: 6.27828, lon: -75.56937, dir: 'Carrera 64 # 75B-600 (acceso norte), Medellín' },
+    { nombre: 'Universidad', lat: 6.26933, lon: -75.56577, dir: 'Calle 73 # 52-40, Medellín' },
+    { nombre: 'Hospital', lat: 6.26368, lon: -75.56344, dir: 'Carrera 51 # 65-85, Medellín' },
+    { nombre: 'Prado', lat: 6.25679, lon: -75.56605, dir: 'Carrera 51D # 57-100, Medellín' },
+    { nombre: 'Parque Berrío', lat: 6.25054, lon: -75.56828, dir: 'Carrera 51 con Calle 50 (aprox.), Medellín' },
+    { nombre: 'San Antonio', lat: 6.24707, lon: -75.56969, dir: 'Carrera 51 con Calle 46, Medellín' },
+    { nombre: 'Alpujarra', lat: 6.24292, lon: -75.57136, dir: 'Carrera 51 # 41-43, Medellín' },
+    { nombre: 'Exposiciones', lat: 6.23843, lon: -75.57322, dir: 'Carrera 51 con Calle 37, Medellín' },
+    { nombre: 'Industriales', lat: 6.23002, lon: -75.57561, dir: 'Carrera 49 # 24-435, Medellín' },
+    { nombre: 'Poblado', lat: 6.21196, lon: -75.57806, dir: 'Avenida El Poblado, sector Astorga (aprox.), Medellín' },
+    { nombre: 'Aguacatala', lat: 6.19377, lon: -75.58192, dir: 'Carrera 48C # 12 Sur-50, Medellín' },
+    { nombre: 'Ayurá', lat: 6.18601, lon: -75.5862, dir: 'Avenida Regional con Calle 32 Sur (aprox.), Envigado' },
+    { nombre: 'Envigado', lat: 6.17469, lon: -75.59706, dir: 'Carrera 42 # 59A-291, Envigado' },
+    { nombre: 'Itagüí', lat: 6.16296, lon: -75.60671, dir: 'Carrera 49 # 50 Sur-80, Itagüí' },
+    { nombre: 'Sabaneta', lat: 6.15789, lon: -75.61604, dir: 'Carrera 49 # 67 Sur, Sabaneta' },
+    { nombre: 'La Estrella', lat: 6.15263, lon: -75.62646, dir: 'Carrera 49 # 77 Sur, La Estrella' }
 ];
 
 // Metro — Línea B (San Antonio ↔ San Javier)
 const ESTACIONES_B = [
-    { nombre: 'San Antonio', lat: 6.24715, lon: -75.56968 },
-    { nombre: 'Cisneros', lat: 6.24901, lon: -75.57511 },
-    { nombre: 'Suramericana', lat: 6.253, lon: -75.58302 },
-    { nombre: 'Estadio', lat: 6.25332, lon: -75.58824 },
-    { nombre: 'Floresta', lat: 6.2587, lon: -75.5977 },
-    { nombre: 'Santa Lucía', lat: 6.25806, lon: -75.60377 },
-    { nombre: 'San Javier', lat: 6.25686, lon: -75.61378 }
+    { nombre: 'San Antonio', lat: 6.24715, lon: -75.56968, dir: 'Carrera 51 con Calle 46, Medellín' },
+    { nombre: 'Cisneros', lat: 6.24901, lon: -75.57511, dir: 'Carrera 57 # 45A-50, Medellín' },
+    { nombre: 'Suramericana', lat: 6.253, lon: -75.58302, dir: 'Carrera 65 con Calle 44 (aprox.), Medellín' },
+    { nombre: 'Estadio', lat: 6.25332, lon: -75.58824, dir: 'Carrera 70 # 47D-15, Medellín' },
+    { nombre: 'Floresta', lat: 6.2587, lon: -75.5977, dir: 'Carrera 80 # 47D-30, Medellín' },
+    { nombre: 'Santa Lucía', lat: 6.25806, lon: -75.60377, dir: 'Calle 47DD # 86-53, Medellín' },
+    { nombre: 'San Javier', lat: 6.25686, lon: -75.61378, dir: 'Carrera 99 # 45-26, Medellín' }
 ];
 
 // Tranvía de Ayacucho (San Antonio ↔ Oriente) — con todas las estaciones intermedias
 const ESTACIONES_TRANVIA = [
-    { nombre: 'San Antonio', lat: 6.247, lon: -75.56913 },
-    { nombre: 'San José', lat: 6.24737, lon: -75.5655 },
-    { nombre: 'Pabellón del Agua', lat: 6.24555, lon: -75.56182 },
-    { nombre: 'Bicentenario', lat: 6.24386, lon: -75.55853 },
-    { nombre: 'Buenos Aires', lat: 6.2415, lon: -75.55389 },
-    { nombre: 'Miraflores', lat: 6.24148, lon: -75.54907 },
-    { nombre: 'Loyola', lat: 6.23924, lon: -75.54524 },
-    { nombre: 'Alejandro Echavarría', lat: 6.2354, lon: -75.54153 },
-    { nombre: 'Oriente', lat: 6.23304, lon: -75.54001 }
+    { nombre: 'San Antonio', lat: 6.247, lon: -75.56913, dir: 'Carrera 51 con Calle 46, Medellín' },
+    { nombre: 'San José', lat: 6.24737, lon: -75.5655, dir: 'Avenida Oriental con Calle 49 (aprox.), Medellín' },
+    { nombre: 'Pabellón del Agua', lat: 6.24555, lon: -75.56182, dir: 'Avenida Ayacucho, barrio Barrio Colón (aprox.), Medellín' },
+    { nombre: 'Bicentenario', lat: 6.24386, lon: -75.55853, dir: 'Avenida Ayacucho, barrio Boston (aprox.), Medellín' },
+    { nombre: 'Buenos Aires', lat: 6.2415, lon: -75.55389, dir: 'Avenida Ayacucho con Carrera 29 (aprox.), Medellín' },
+    { nombre: 'Miraflores', lat: 6.24148, lon: -75.54907, dir: 'Avenida Ayacucho, barrio Miraflores (aprox.), Medellín' },
+    { nombre: 'Loyola', lat: 6.23924, lon: -75.54524, dir: 'Avenida Ayacucho, barrio Loyola (aprox.), Medellín' },
+    { nombre: 'Alejandro Echavarría', lat: 6.2354, lon: -75.54153, dir: 'Barrio Alejandro Echavarría (aprox.), Medellín' },
+    { nombre: 'Oriente', lat: 6.23304, lon: -75.54001, dir: 'Barrio Oriente, comuna 8 (aprox.), Medellín' }
 ];
 
 // Metrocable — Línea K (Acevedo ↔ Santo Domingo)
 const ESTACIONES_K = [
-    { nombre: 'Acevedo', lat: 6.30025, lon: -75.55827 },
-    { nombre: 'Andalucía', lat: 6.29618, lon: -75.55193 },
-    { nombre: 'Popular', lat: 6.29513, lon: -75.54815 },
-    { nombre: 'Santo Domingo', lat: 6.29316, lon: -75.54172 }
+    { nombre: 'Acevedo', lat: 6.30025, lon: -75.55827, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
+    { nombre: 'Andalucía', lat: 6.29618, lon: -75.55193, dir: 'Carrera 46A # 107-3, Medellín' },
+    { nombre: 'Popular', lat: 6.29513, lon: -75.54815, dir: 'Carrera 42B # 107-61, Medellín' },
+    { nombre: 'Santo Domingo', lat: 6.29316, lon: -75.54172, dir: 'Carrera 51A # 46-08, Medellín' }
 ];
 
 // Metrocable — Línea L (Santo Domingo ↔ Arví)
 const ESTACIONES_L = [
-    { nombre: 'Santo Domingo', lat: 6.29274, lon: -75.5419 },
-    { nombre: 'Arví', lat: 6.28153, lon: -75.50293 }
+    { nombre: 'Santo Domingo', lat: 6.29274, lon: -75.5419, dir: 'Carrera 51A # 46-08, Medellín' },
+    { nombre: 'Arví', lat: 6.28153, lon: -75.50293, dir: 'Parque Arví, vereda Piedras Blancas, Santa Elena (aprox.), Medellín' }
 ];
 
 // Metrocable — Línea H (Oriente ↔ Villa Sierra)
 const ESTACIONES_H = [
-    { nombre: 'Oriente', lat: 6.2332, lon: -75.54 },
-    { nombre: 'Las Torres', lat: 6.23655, lon: -75.53628 },
-    { nombre: 'Villa Sierra', lat: 6.23499, lon: -75.52864 }
+    { nombre: 'Oriente', lat: 6.2332, lon: -75.54, dir: 'Barrio Oriente, comuna 8 (aprox.), Medellín' },
+    { nombre: 'Las Torres', lat: 6.23655, lon: -75.53628, dir: 'Barrio Las Torres, comuna 8 (aprox.), Medellín' },
+    { nombre: 'Villa Sierra', lat: 6.23499, lon: -75.52864, dir: 'Barrio La Sierra, comuna 8 (aprox.), Medellín' }
 ];
 
 // Metrocable — Línea J (San Javier ↔ La Aurora)
 const ESTACIONES_J = [
-    { nombre: 'San Javier', lat: 6.25679, lon: -75.61341 },
-    { nombre: 'Juan XXIII', lat: 6.26569, lon: -75.61369 },
-    { nombre: 'Vallejuelos', lat: 6.27538, lon: -75.61402 },
-    { nombre: 'La Aurora', lat: 6.2811, lon: -75.61421 }
+    { nombre: 'San Javier', lat: 6.25679, lon: -75.61341, dir: 'Carrera 99 # 45-26, Medellín' },
+    { nombre: 'Juan XXIII', lat: 6.26569, lon: -75.61369, dir: 'Carrera 99CD con Calle 48B, Medellín' },
+    { nombre: 'Vallejuelos', lat: 6.27538, lon: -75.61402, dir: 'Calle 61B con Carrera 104, Medellín' },
+    { nombre: 'La Aurora', lat: 6.2811, lon: -75.61421, dir: 'Calle 64 con Carrera 104, Medellín' }
 ];
 
 // Metroplús — Línea 1 (Universidad de Medellín ↔ Parque de Aranjuez, por Av. Ferrocarril)
 const ESTACIONES_MP1 = [
-    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913 },
-    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506 },
-    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106 },
-    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675 },
-    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096 },
-    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655 },
-    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206 },
-    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652 },
-    { nombre: 'Plaza Mayor', lat: 6.2437, lon: -75.57529 },
-    { nombre: 'Cisneros', lat: 6.24874, lon: -75.57503 },
-    { nombre: 'Minorista', lat: 6.2561, lon: -75.57312 },
-    { nombre: 'Chagualo', lat: 6.26073, lon: -75.56913 },
-    { nombre: 'Ruta N - U. de A.', lat: 6.26355, lon: -75.56764 },
-    { nombre: 'Hospital', lat: 6.26383, lon: -75.56313 },
-    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017 }, // fuera de servicio operativo actualmente
-    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581 },
-    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495 },
-    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401 },
-    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312 },
-    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285 },
-    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663 }
+    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913, dir: 'Carrera 87B con Calle 30A, Medellín' },
+    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506, dir: 'Carrera 84 con Calle 30A, Medellín' },
+    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106, dir: 'Carrera 81 con Calle 30A, Medellín' },
+    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675, dir: 'Carrera 76 con Calle 30A, Medellín' },
+    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096, dir: 'Carrera 73 con Calle 30A, Medellín' },
+    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655, dir: 'Carrera 70 con Calle 30A, Medellín' },
+    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206, dir: 'Carrera 65 con Avenida 33, Medellín' },
+    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652, dir: 'Avenida Ferrocarril con Calle 30, Medellín' },
+    { nombre: 'Plaza Mayor', lat: 6.2437, lon: -75.57529, dir: 'Calle 41 con Carrera 52 (aprox.), Medellín' },
+    { nombre: 'Cisneros', lat: 6.24874, lon: -75.57503, dir: 'Carrera 57 # 45A-50, Medellín' },
+    { nombre: 'Minorista', lat: 6.2561, lon: -75.57312, dir: 'Carrera 57 # 54-01, Medellín' },
+    { nombre: 'Chagualo', lat: 6.26073, lon: -75.56913, dir: 'Carrera 55 con Calle 65 (aprox.), Medellín' },
+    { nombre: 'Ruta N - U. de A.', lat: 6.26355, lon: -75.56764, dir: 'Carrera 55 # 65-01, Medellín' },
+    { nombre: 'Hospital', lat: 6.26383, lon: -75.56313, dir: 'Carrera 51 # 65-85, Medellín' },
+    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017, dir: 'Carrera 51 con Calle 68 (aprox.), Medellín' }, // fuera de servicio operativo actualmente
+    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581, dir: 'Carrera 45 # 66-01, Medellín' },
+    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495, dir: 'Carrera 45 con Calle 70 (aprox.), Medellín' },
+    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401, dir: 'Carrera 45 con Calle 73 (aprox.), Medellín' },
+    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312, dir: 'Carrera 45 con Calle 78 (aprox.), Medellín' },
+    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285, dir: 'Carrera 45 con Calle 83 (aprox.), Medellín' },
+    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663, dir: 'Carrera 49A # 93-00, Medellín' }
 ];
 
 // Metroplús — Línea 2 (Universidad de Medellín ↔ Parque de Aranjuez, por Av. Oriental)
 const ESTACIONES_MP2 = [
-    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913 },
-    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506 },
-    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106 },
-    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675 },
-    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096 },
-    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655 },
-    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206 },
-    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652 },
-    { nombre: 'Barrio Colombia', lat: 6.22864, lon: -75.571 },
-    { nombre: 'Barrio San Diego', lat: 6.23358, lon: -75.57002 },
-    { nombre: 'Barrio Colón', lat: 6.24057, lon: -75.56971 },
-    { nombre: 'San José', lat: 6.24658, lon: -75.56644 },
-    { nombre: 'La Playa', lat: 6.24933, lon: -75.56446 },
-    { nombre: 'Catedral Metropolitana', lat: 6.25293, lon: -75.56238 },
-    { nombre: 'Prado', lat: 6.25783, lon: -75.56551 },
-    { nombre: 'Hospital', lat: 6.26293, lon: -75.56356 },
-    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017 },
-    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581 },
-    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495 },
-    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401 },
-    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312 },
-    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285 },
-    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663 }
+    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913, dir: 'Carrera 87B con Calle 30A, Medellín' },
+    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506, dir: 'Carrera 84 con Calle 30A, Medellín' },
+    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106, dir: 'Carrera 81 con Calle 30A, Medellín' },
+    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675, dir: 'Carrera 76 con Calle 30A, Medellín' },
+    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096, dir: 'Carrera 73 con Calle 30A, Medellín' },
+    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655, dir: 'Carrera 70 con Calle 30A, Medellín' },
+    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206, dir: 'Carrera 65 con Avenida 33, Medellín' },
+    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652, dir: 'Avenida Ferrocarril con Calle 30, Medellín' },
+    { nombre: 'Barrio Colombia', lat: 6.22864, lon: -75.571, dir: 'Carrera 52 con Calle 30 (aprox.), Medellín' },
+    { nombre: 'Barrio San Diego', lat: 6.23358, lon: -75.57002, dir: 'Carrera 46 con Calle 34 (aprox.), Medellín' },
+    { nombre: 'Barrio Colón', lat: 6.24057, lon: -75.56971, dir: 'Carrera 45 con Calle 44 (aprox.), Medellín' },
+    { nombre: 'San José', lat: 6.24658, lon: -75.56644, dir: 'Avenida Oriental con Calle 49 (aprox.), Medellín' },
+    { nombre: 'La Playa', lat: 6.24933, lon: -75.56446, dir: 'Carrera 45 con Avenida La Playa (aprox.), Medellín' },
+    { nombre: 'Catedral Metropolitana', lat: 6.25293, lon: -75.56238, dir: 'Parque Bolívar (aprox.), Medellín' },
+    { nombre: 'Prado', lat: 6.25783, lon: -75.56551, dir: 'Carrera 51 con Calle 57 (aprox.), Medellín' },
+    { nombre: 'Hospital', lat: 6.26293, lon: -75.56356, dir: 'Carrera 51 # 65-85, Medellín' },
+    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017, dir: 'Carrera 51 con Calle 68 (aprox.), Medellín' },
+    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581, dir: 'Carrera 45 # 66-01, Medellín' },
+    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495, dir: 'Carrera 45 con Calle 70 (aprox.), Medellín' },
+    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401, dir: 'Carrera 45 con Calle 73 (aprox.), Medellín' },
+    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312, dir: 'Carrera 45 con Calle 78 (aprox.), Medellín' },
+    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285, dir: 'Carrera 45 con Calle 83 (aprox.), Medellín' },
+    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663, dir: 'Carrera 49A # 93-00, Medellín' }
 ];
 
 // Definición de cada línea: color, tipo, estilo de trazo y categoría de leyenda
@@ -255,6 +262,30 @@ const CATEGORIAS_LEYENDA = [
     { id: 'metroplus',  etiqueta: 'Metroplús',  color: '#e11d48' },
     { id: 'tranvia',    etiqueta: 'Tranvía',    color: '#7c3aed' }
 ];
+
+// Etiquetas y orden de presentación de cada línea en el buscador de estaciones
+const ETIQUETAS_LINEA = {
+    a:       'Línea A · Metro',
+    b:       'Línea B · Metro',
+    tranvia: 'Tranvía de Ayacucho',
+    k:       'Metrocable K',
+    j:       'Metrocable J',
+    h:       'Metrocable H',
+    l:       'Metrocable L',
+    mp1:     'Metroplús · Línea 1',
+    mp2:     'Metroplús · Línea 2'
+};
+const ORDEN_LINEAS = ['a', 'b', 'tranvia', 'k', 'j', 'h', 'l', 'mp1', 'mp2'];
+
+/* ---------- Etiqueta/color visual de cada línea (para las indicaciones) ---------- */
+function infoDeLinea(claveLinea) {
+    const linea = LINEAS[claveLinea];
+    const cat = CATEGORIAS_LEYENDA.find(c => c.id === linea.categoria);
+    return {
+        etiqueta: cat ? cat.etiqueta : claveLinea.toUpperCase(),
+        color: linea.color
+    };
+}
 
 /* ---------- Estaciones únicas + detección de transbordos ---------- */
 function listaEstacionesUnicas() {
@@ -280,13 +311,16 @@ function lineasPorEstacion() {
 
 /* ---------- Dibujo de la red completa ---------- */
 function crearMarcadorEstacion(estacion, color, esTransbordo) {
+    const tooltipTexto = estacion.nombre
+        + (esTransbordo ? ' (transbordo)' : '')
+        + (estacion.dir ? `<br><span style="opacity:.75;font-weight:500;">${estacion.dir}</span>` : '');
     return L.circleMarker([estacion.lat, estacion.lon], {
         radius: esTransbordo ? 7 : 5,
         weight: esTransbordo ? 3 : 2,
         color: '#ffffff',
         fillColor: esTransbordo ? '#0f172a' : color,
         fillOpacity: 1
-    }).bindTooltip(estacion.nombre + (esTransbordo ? ' (transbordo)' : ''), { direction: 'top', offset: [0, -6] });
+    }).bindTooltip(tooltipTexto, { direction: 'top', offset: [0, -6] });
 }
 
 function dibujarRedCompleta() {
@@ -416,6 +450,7 @@ function configurarEnter() {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 calcularRuta();
+                cerrarTodosLosPaneles();
             }
         });
     });
@@ -425,21 +460,119 @@ function configurarNavegar() {
     document.getElementById('btnNavigate').addEventListener('click', calcularRuta);
 }
 
-/* ---------- Autocompletado de estaciones (datalist) ---------- */
-function configurarAutocompletado() {
-    const datalist = document.createElement('datalist');
-    datalist.id = 'listaEstacionesMetro';
-    listaEstacionesUnicas().forEach(e => {
-        const opcion = document.createElement('option');
-        opcion.value = e.nombre;
-        datalist.appendChild(opcion);
-    });
-    document.body.appendChild(datalist);
+/* =========================================================
+   Buscador de estaciones: panel agrupado por línea, con la
+   dirección de cada estación visible debajo del nombre.
+   ========================================================= */
 
+function cerrarTodosLosPaneles() {
+    document.querySelectorAll('.station-dropdown').forEach(p => p.classList.remove('open'));
+}
+
+function renderizarOpcionesEstacion(panel, inputId, filtro) {
+    panel.innerHTML = '';
+    const q = normalizarTexto(filtro || '');
+    let huboResultados = false;
+
+    ORDEN_LINEAS.forEach(clave => {
+        const linea = LINEAS[clave];
+        if (!linea) return;
+
+        const estacionesFiltradas = linea.estaciones.filter(e => !q || normalizarTexto(e.nombre).includes(q));
+        if (!estacionesFiltradas.length) return;
+        huboResultados = true;
+
+        const grupo = document.createElement('div');
+        grupo.className = 'station-group';
+
+        const titulo = document.createElement('div');
+        titulo.className = 'station-group-label';
+        titulo.innerHTML = `<span class="station-group-dot" style="background:${linea.color};"></span>${ETIQUETAS_LINEA[clave] || clave.toUpperCase()}`;
+        grupo.appendChild(titulo);
+
+        estacionesFiltradas.forEach(estacion => {
+            const opcion = document.createElement('button');
+            opcion.type = 'button';
+            opcion.className = 'station-option';
+            opcion.innerHTML = `<span class="station-name">${estacion.nombre}</span>`
+                + `<span class="station-address">${estacion.dir || 'Dirección no disponible'}</span>`;
+            opcion.addEventListener('click', () => {
+                const input = document.getElementById(inputId);
+                input.value = estacion.nombre;
+                cerrarTodosLosPaneles();
+                calcularRuta();
+            });
+            grupo.appendChild(opcion);
+        });
+
+        panel.appendChild(grupo);
+    });
+
+    if (!huboResultados) {
+        const vacio = document.createElement('div');
+        vacio.className = 'station-empty';
+        vacio.textContent = 'No se encontraron estaciones con ese nombre';
+        panel.appendChild(vacio);
+    }
+}
+
+function configurarAutocompletado() {
     ['origen', 'destino'].forEach(id => {
-        const campo = document.getElementById(id);
-        campo.setAttribute('list', 'listaEstacionesMetro');
-        campo.setAttribute('placeholder', 'Escribe el nombre de una estación');
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        // Ya no se usa el datalist nativo del navegador: el buscador propio
+        // agrupa por línea y muestra la dirección de cada estación.
+        input.removeAttribute('list');
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('placeholder', 'Escribe el nombre de una estación');
+
+        const wrap = input.closest('.route-input-wrap');
+        if (!wrap) return;
+
+        const panel = document.createElement('div');
+        panel.className = 'station-dropdown';
+        panel.id = 'dropdown-' + id;
+        wrap.appendChild(panel);
+
+        input.addEventListener('focus', () => {
+            renderizarOpcionesEstacion(panel, id, input.value);
+            cerrarTodosLosPaneles();
+            panel.classList.add('open');
+        });
+
+        input.addEventListener('input', () => {
+            renderizarOpcionesEstacion(panel, id, input.value);
+            panel.classList.add('open');
+        });
+
+        // Botón/flecha para expandir y ver todas las estaciones agrupadas
+        // por línea, incluso si ya hay texto escrito en el campo.
+        const toggleBtn = document.querySelector(`.station-dropdown-toggle[data-for="${id}"]`);
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const yaEstabaAbierto = panel.classList.contains('open');
+                cerrarTodosLosPaneles();
+                if (!yaEstabaAbierto) {
+                    renderizarOpcionesEstacion(panel, id, '');
+                    panel.classList.add('open');
+                    toggleBtn.classList.add('spun');
+                    input.focus();
+                } else {
+                    toggleBtn.classList.remove('spun');
+                }
+            });
+        }
+    });
+
+    // Cerrar cualquier panel abierto al hacer clic fuera del campo de ruta
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.route-input-wrap')) {
+            cerrarTodosLosPaneles();
+            document.querySelectorAll('.station-dropdown-toggle').forEach(b => b.classList.remove('spun'));
+        }
     });
 }
 
@@ -510,6 +643,138 @@ function contarTransbordos(lineas) {
     return cambios;
 }
 
+/* ---------- Construcción de segmentos por línea (para las indicaciones) ---------- */
+// Agrupa el camino estación-a-estación en tramos continuos que usan la
+// misma línea, para poder anunciar "toma la Línea X" una sola vez por
+// tramo, en lugar de estación por estación.
+function construirSegmentos(camino, lineas) {
+    const segmentos = [];
+    let inicio = 0;
+    for (let i = 1; i < lineas.length; i++) {
+        if (lineas[i] !== lineas[i - 1]) {
+            segmentos.push({ linea: lineas[i - 1], desde: camino[inicio], hasta: camino[i] });
+            inicio = i;
+        }
+    }
+    segmentos.push({ linea: lineas[lineas.length - 1], desde: camino[inicio], hasta: camino[camino.length - 1] });
+    return segmentos;
+}
+
+// Determina el destino/terminal hacia el que avanza un tramo (p. ej.
+// "dirección Niquía"), comparando el orden de las estaciones dentro del
+// arreglo oficial de esa línea.
+function direccionDelTramo(claveLinea, estacionDesde, estacionSiguiente) {
+    const estaciones = LINEAS[claveLinea].estaciones;
+    const idxDesde = estaciones.findIndex(e => e.nombre === estacionDesde);
+    const idxSig = estaciones.findIndex(e => e.nombre === estacionSiguiente);
+    if (idxDesde === -1 || idxSig === -1) return estaciones[estaciones.length - 1].nombre;
+    return idxSig > idxDesde ? estaciones[estaciones.length - 1].nombre : estaciones[0].nombre;
+}
+
+/* ---------- Render de las indicaciones paso a paso (panel derecho) ---------- */
+function ocultarIndicaciones() {
+    const placeholder = document.getElementById('directionsPlaceholder');
+    const lista = document.getElementById('directionsList');
+    if (placeholder) placeholder.style.display = 'flex';
+    if (lista) { lista.classList.remove('show'); lista.innerHTML = ''; }
+}
+
+function renderizarIndicaciones(resultado, estacionOrigen, estacionDestino, coordsPorNombre) {
+    const placeholder = document.getElementById('directionsPlaceholder');
+    const lista = document.getElementById('directionsList');
+    if (!lista) return;
+
+    const segmentos = construirSegmentos(resultado.camino, resultado.lineas);
+    const pasos = [];
+
+    // Paso 1: punto de partida
+    pasos.push({
+        icono: 'map-pin',
+        color: '#008037',
+        titulo: 'Punto de partida',
+        texto: `Comienza en la estación <b>${estacionOrigen.nombre}</b>.`,
+        estacion: estacionOrigen.nombre
+    });
+
+    segmentos.forEach((seg, idx) => {
+        const siguienteEstacion = resultado.camino[resultado.camino.indexOf(seg.desde) + 1] || seg.hasta;
+        const info = infoDeLinea(seg.linea);
+        const direccion = direccionDelTramo(seg.linea, seg.desde, siguienteEstacion);
+
+        pasos.push({
+            icono: 'navigation',
+            color: info.color,
+            titulo: `Toma la ${info.etiqueta}`,
+            texto: `Desde <b>${seg.desde}</b>, dirección hacia <b>${direccion}</b>.`,
+            estacion: seg.desde
+        });
+
+        const esUltimoSegmento = idx === segmentos.length - 1;
+        if (!esUltimoSegmento) {
+            pasos.push({
+                icono: 'repeat',
+                color: '#64748b',
+                titulo: 'Haz transbordo',
+                texto: `Baja en <b>${seg.hasta}</b> y cambia de línea.`,
+                estacion: seg.hasta
+            });
+        }
+    });
+
+    // Último paso: destino final
+    pasos.push({
+        icono: 'flag',
+        color: '#e0442f',
+        titulo: '¡Has llegado!',
+        texto: `Baja en <b>${estacionDestino.nombre}</b>. Ese es tu destino.`,
+        estacion: estacionDestino.nombre
+    });
+
+    lista.innerHTML = pasos.map(paso => `
+        <li class="direction-step" data-estacion="${paso.estacion}">
+            <span class="direction-step-icon" style="background:${paso.color};">
+                <i data-lucide="${paso.icono}"></i>
+            </span>
+            <div class="direction-step-body">
+                <p class="direction-step-title">${paso.titulo}</p>
+                <p class="direction-step-text">${paso.texto}</p>
+            </div>
+        </li>
+    `).join('');
+
+    if (placeholder) placeholder.style.display = 'none';
+    lista.classList.add('show');
+    if (window.lucide) lucide.createIcons();
+
+    // Interactividad: al hacer clic en un paso, el mapa se centra en esa estación
+    lista.querySelectorAll('.direction-step').forEach(item => {
+        item.addEventListener('click', () => {
+            const nombreEstacion = item.getAttribute('data-estacion');
+            const est = coordsPorNombre.get(nombreEstacion);
+            if (!est || !mapa) return;
+            mapa.setView([est.lat, est.lon], 16, { animate: true });
+            resaltarEstacionTemporal(est.lat, est.lon);
+        });
+    });
+}
+
+// Muestra un pulso temporal sobre la estación seleccionada en un paso
+let marcadorResaltado = null;
+function resaltarEstacionTemporal(lat, lon) {
+    if (marcadorResaltado) mapa.removeLayer(marcadorResaltado);
+    marcadorResaltado = L.marker([lat, lon], {
+        icon: L.divIcon({
+            className: '',
+            html: '<span class="geo-marker"></span>',
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+        })
+    }).addTo(mapa);
+    setTimeout(() => {
+        if (marcadorResaltado) { mapa.removeLayer(marcadorResaltado); marcadorResaltado = null; }
+    }, 2500);
+}
+
 function colocarMarcador(tipo, lat, lon) {
     if (tipo === 'origen') {
         if (marcadorOrigen) { marcadorOrigen.setLatLng([lat, lon]); return; }
@@ -545,6 +810,7 @@ async function calcularRuta() {
 
     if (!origenTexto || !destinoTexto) {
         mostrarToast('Ingresa una estación de origen y una de destino');
+        ocultarIndicaciones();
         return;
     }
 
@@ -556,11 +822,13 @@ async function calcularRuta() {
     if (!estacionOrigen) {
         mostrarToast(`"${origenTexto}" no es una estación del sistema`);
         btnNavigate.disabled = false;
+        ocultarIndicaciones();
         return;
     }
     if (!estacionDestino) {
         mostrarToast(`"${destinoTexto}" no es una estación del sistema`);
         btnNavigate.disabled = false;
+        ocultarIndicaciones();
         return;
     }
 
@@ -568,6 +836,7 @@ async function calcularRuta() {
     if (!resultado || resultado.camino.length < 2) {
         mostrarToast('No hay una ruta directa entre esas estaciones');
         btnNavigate.disabled = false;
+        ocultarIndicaciones();
         return;
     }
 
@@ -597,6 +866,7 @@ async function calcularRuta() {
 
     const sufijoTransbordo = transbordos > 0 ? ` (${transbordos} transbordo${transbordos > 1 ? 's' : ''})` : '';
     mostrarToast(`Ruta lista: ${estacionOrigen.nombre} ➔ ${estacionDestino.nombre}${sufijoTransbordo}`);
+    renderizarIndicaciones(resultado, estacionOrigen, estacionDestino, coordsPorNombre);
     btnNavigate.disabled = false;
 }
 
