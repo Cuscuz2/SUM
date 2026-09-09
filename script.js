@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupScrollReveal();
     setupNavProgress();
     setupActiveStop();
+    setupLiveValidation();
 });
 
 /* ---------- Menú Móvil ---------- */
@@ -57,6 +58,7 @@ function abrirRegistro() {
 function cerrarRegistro() {
     document.getElementById('registerModal').classList.remove('active');
     document.getElementById('registerError').classList.remove('active');
+    cerrarTodasLasInfo();
 }
 
 // Cerrar modal al hacer clic fuera del contenido
@@ -65,6 +67,11 @@ document.addEventListener('click', (e) => {
         e.target.classList.remove('active');
     }
 });
+
+/* ---------- Ventanas emergentes con los parámetros de cada campo ---------- */
+function cerrarTodasLasInfo() {
+    document.querySelectorAll('.field-info.active').forEach(info => info.classList.remove('active'));
+}
 
 /* ---------- Validación de contraseña ---------- */
 // Requisitos: más de 8 caracteres, 1 mayúscula, 1 minúscula, 1 número y 1 símbolo especial
@@ -118,6 +125,100 @@ function validarPassword(password) {
         return "La contraseña debe incluir al menos un símbolo especial (ej. !@#$%).";
     }
     return null; // válida
+}
+
+/* ---------- Validación de correo (para el checklist en vivo) ---------- */
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/* ---------- Checklist en vivo: se corrige mientras el usuario escribe ---------- */
+function actualizarChecklist(infoId, valor, evaluador) {
+    const contenedor = document.getElementById(infoId);
+    if (!contenedor) return;
+    const resultados = evaluador(valor);
+
+    contenedor.querySelectorAll('li[data-rule]').forEach(li => {
+        const regla = li.getAttribute('data-rule');
+        li.classList.remove('valid', 'invalid');
+        if (valor.length === 0) return; // campo vacío: estado neutro (○)
+        li.classList.add(resultados[regla] ? 'valid' : 'invalid');
+    });
+}
+
+function evaluarNombre(v) {
+    return { soloLetras: NOMBRE_REGEX.test(v) };
+}
+function evaluarUsuario(v) {
+    return {
+        sinEspacios: !/\s/.test(v),
+        soloAlfanum: USERNAME_REGEX.test(v)
+    };
+}
+function evaluarCorreo(v) {
+    return { formatoCorreo: EMAIL_REGEX.test(v) };
+}
+function evaluarPassword(v) {
+    return {
+        longitud: v.length > 8,
+        mayuscula: /[A-Z]/.test(v),
+        minuscula: /[a-z]/.test(v),
+        numero: /\d/.test(v),
+        simbolo: /[^A-Za-z0-9]/.test(v)
+    };
+}
+function evaluarConfirmPassword(v) {
+    const original = document.getElementById('regPassword').value;
+    return { coincide: v.length > 0 && v === original };
+}
+
+// Abre el checklist del campo al enfocarlo y lo cierra 20s después de salir de él
+function enlazarAperturaEnFoco(inputId, infoId) {
+    const input = document.getElementById(inputId);
+    const info = document.getElementById(infoId);
+    if (!input || !info) return;
+
+    let temporizadorCierre = null;
+
+    input.addEventListener('focus', () => {
+        if (temporizadorCierre) clearTimeout(temporizadorCierre);
+        cerrarTodasLasInfo();
+        info.classList.add('active');
+    });
+
+    input.addEventListener('blur', () => {
+        temporizadorCierre = setTimeout(() => {
+            info.classList.remove('active');
+        }, 20000); // 20 segundos de espera antes de ocultar el mensaje
+    });
+}
+
+function setupLiveValidation() {
+    const regNombre = document.getElementById('regNombre');
+    const regUsername = document.getElementById('regUsername');
+    const regEmail = document.getElementById('regEmail');
+    const regPassword = document.getElementById('regPassword');
+    const regConfirmPassword = document.getElementById('regConfirmPassword');
+
+    if (!regNombre) return; // el formulario de registro no está en esta página
+
+    regNombre.addEventListener('input', e => actualizarChecklist('infoNombre', e.target.value, evaluarNombre));
+    regUsername.addEventListener('input', e => actualizarChecklist('infoUsuario', e.target.value, evaluarUsuario));
+    regEmail.addEventListener('input', e => actualizarChecklist('infoCorreo', e.target.value, evaluarCorreo));
+
+    regPassword.addEventListener('input', e => {
+        actualizarChecklist('infoPassword', e.target.value, evaluarPassword);
+        // Si ya se escribió la confirmación, revalidarla también al cambiar la contraseña
+        if (regConfirmPassword.value.length > 0) {
+            actualizarChecklist('infoConfirmPassword', regConfirmPassword.value, evaluarConfirmPassword);
+        }
+    });
+
+    regConfirmPassword.addEventListener('input', e => actualizarChecklist('infoConfirmPassword', e.target.value, evaluarConfirmPassword));
+
+    enlazarAperturaEnFoco('regNombre', 'infoNombre');
+    enlazarAperturaEnFoco('regUsername', 'infoUsuario');
+    enlazarAperturaEnFoco('regEmail', 'infoCorreo');
+    enlazarAperturaEnFoco('regPassword', 'infoPassword');
+    enlazarAperturaEnFoco('regConfirmPassword', 'infoConfirmPassword');
 }
 
 /* ---------- Formularios (demo) ---------- */
