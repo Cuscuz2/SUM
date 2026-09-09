@@ -347,22 +347,47 @@
                 <div class="input-group">
                     <label for="regNombre">Nombre completo</label>
                     <input type="text" id="regNombre" placeholder="Juan Pérez" required>
+                    <div class="field-info" id="infoNombre" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="soloLetras">Solo letras y espacios (incluye tildes y ñ)</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="regUsername">Nombre de usuario</label>
                     <input type="text" id="regUsername" placeholder="usuario123" autocomplete="username" required>
+                    <div class="field-info" id="infoUsuario" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="sinEspacios">Sin espacios</li>
+                            <li data-rule="soloAlfanum">Solo letras y números (sin símbolos)</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="regEmail">Correo electrónico</label>
                     <input type="email" id="regEmail" placeholder="ejemplo@correo.com" required>
+                    <div class="field-info" id="infoCorreo" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="formatoCorreo">Formato válido, ej. usuario@dominio.com</li>
+                        </ul>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label for="regPassword">Contraseña</label>
                     <div class="input-password-wrapper">
-                        <input type="password" id="regPassword" placeholder="••••••••" minlength="6" required>
+                        <input type="password" id="regPassword" placeholder="••••••••" minlength="9" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)" aria-label="Mostrar contraseña">
                             <i data-lucide="eye"></i>
                         </button>
+                    </div>
+                    <div class="field-info" id="infoPassword" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="longitud">Más de 8 caracteres</li>
+                            <li data-rule="mayuscula">Una letra mayúscula (A-Z)</li>
+                            <li data-rule="minuscula">Una letra minúscula (a-z)</li>
+                            <li data-rule="numero">Un número (0-9)</li>
+                            <li data-rule="simbolo">Un símbolo especial (ej. !@#$%)</li>
+                        </ul>
                     </div>
                 </div>
                 <div class="input-group">
@@ -372,6 +397,11 @@
                         <button type="button" class="toggle-password" onclick="togglePassword('regConfirmPassword', this)" aria-label="Mostrar contraseña">
                             <i data-lucide="eye"></i>
                         </button>
+                    </div>
+                    <div class="field-info" id="infoConfirmPassword" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="coincide">Coincide con la contraseña ingresada</li>
+                        </ul>
                     </div>
                 </div>
 
