@@ -63,7 +63,7 @@
 
                 <div class="summary-card summary-card--accent summary-card--stacked">
                     <p class="summary-label"><i data-lucide="landmark" class="icon-sm"></i> Costo total</p>
-                    <p class="summary-value">$<span id="summaryCost">3,210</span></p>
+                    <p class="summary-value">$<span id="summaryCost">3,820</span></p>
                     <p class="summary-unit">COP</p>
                 </div>
             </section>
@@ -194,70 +194,31 @@
                     <div class="stat-box">
                         <i data-lucide="route"></i>
                         <div>
-                            <h4>24</h4>
+                            <h4 id="statViajesMes">…</h4>
                             <span>Viajes este mes</span>
                         </div>
                     </div>
                     <div class="stat-box">
                         <i data-lucide="clock"></i>
                         <div>
-                            <h4>340 min</h4>
+                            <h4 id="statTiempoMes">…</h4>
                             <span>Tiempo acumulado</span>
                         </div>
                     </div>
                     <div class="stat-box">
                         <i data-lucide="piggy-bank"></i>
                         <div>
-                            <h4>$77,040 COP</h4>
+                            <h4 id="statCostoMes">…</h4>
                             <span>Total gastado</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="history-list">
-                    <div class="history-item">
-                        <div class="history-icon green"><i data-lucide="arrow-up-right"></i></div>
-                        <div class="history-info">
-                            <h3>San Antonio ➔ Poblado</h3>
-                            <p>Hoy, 08:30 AM • Línea A • 14 min</p>
-                        </div>
-                        <div class="history-price">
-                            <span class="amount">-$3,210 COP</span>
-                        </div>
-                    </div>
-
-                    <div class="history-item">
-                        <div class="history-icon green"><i data-lucide="arrow-up-right"></i></div>
-                        <div class="history-info">
-                            <h3>Poblado ➔ San Antonio</h3>
-                            <p>Ayer, 06:15 PM • Línea A • 15 min</p>
-                        </div>
-                        <div class="history-price">
-                            <span class="amount">-$3,210 COP</span>
-                        </div>
-                    </div>
-
-                    <div class="history-item">
-                        <div class="history-icon purple"><i data-lucide="arrow-up-right"></i></div>
-                        <div class="history-info">
-                            <h3>San Javier ➔ La Aurora</h3>
-                            <p>10 Ago, 02:20 PM • Metrocable • 12 min</p>
-                        </div>
-                        <div class="history-price">
-                            <span class="amount">-$3,210 COP</span>
-                        </div>
-                    </div>
-
-                    <div class="history-item">
-                        <div class="history-icon orange"><i data-lucide="arrow-up-right"></i></div>
-                        <div class="history-info">
-                            <h3>San Antonio ➔ San Javier</h3>
-                            <p>08 Ago, 11:00 AM • Línea B • 10 min</p>
-                        </div>
-                        <div class="history-price">
-                            <span class="amount">-$3,210 COP</span>
-                        </div>
-                    </div>
+                <!-- Se llena dinámicamente desde ../PHP/historial.php (mapa.js -> cargarHistorial) -->
+                <div class="history-list" id="historyList">
+                    <p class="history-empty" id="historyEmpty" style="display:none;">
+                        Aún no tienes viajes registrados. ¡Usa "Iniciar Navegación" para tu primer viaje!
+                    </p>
                 </div>
             </div>
         </div>
@@ -276,10 +237,26 @@
                             <h4>Tipo de Tarifa</h4>
                             <p>Categoría del perfil del viajero.</p>
                         </div>
-                        <select class="select-input">
-                            <option selected>Frecuente ($3,210)</option>
-                            <option>Estudiantil ($1,350)</option>
-                            <option>Adulto Mayor ($2,900)</option>
+                        <select class="select-input" id="tarifaTipo">
+                            <option value="3820" selected>Frecuente ($3,820)</option>
+                            <option value="1600">Estudiantil ($1,600)</option>
+                            <option value="3330">Adulto Mayor ($3,330)</option>
+                            <option value="2720">persona Discapacidad ($2,720)</option>
+                            <option value="4400">eventual ($4,400)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="simple-card" style="margin-top: 16px;">
+                    <div class="setting-row">
+                        <div>
+                            <h4>Tarifas Metrocable Arví (Línea L)</h4>
+                            <p>Esquema de precios especial e independiente, desde la estación Santo Domingo.</p>
+                        </div>
+                        <select class="select-input" id="tarifaArvi">
+                            <option value="3900" selected>Estratos 1, 2 y 3 - Cívica ($3,900)</option>
+                            <option value="11900">Nacionales / Cívica Personalizada ($11,900)</option>
+                            <option value="26700">Extranjeros / Público General ($26,700)</option>
                         </select>
                     </div>
                 </div>
