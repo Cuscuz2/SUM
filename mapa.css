@@ -757,6 +757,12 @@
     justify-content: space-between;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.history-empty {
+    text-align: center;
+    color: var(--text-muted, #64748b);
+    font-size: 14px;
+    padding: 40px 20px;
+}
 .history-item:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.04);
