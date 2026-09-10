@@ -15,7 +15,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<link rel="stylesheet" href="pruebas.css">
+<link rel="stylesheet" href="mapa.css">
 </head>
 <body class="dash-body">
 
@@ -50,6 +50,23 @@
                     <span>Configuración</span>
                 </a>
             </nav>
+
+            <!-- Resumen de la ruta (reubicado desde el panel derecho) -->
+            <section class="sidebar-summary">
+                <h2 class="sidebar-summary-title">Resumen de la ruta</h2>
+
+                <div class="summary-card summary-card--stacked">
+                    <p class="summary-label"><i data-lucide="clock" class="icon-sm"></i> Tiempo aproximado</p>
+                    <p class="summary-value"><span id="summaryTime">14</span> <span class="summary-unit">min</span></p>
+                    <div class="summary-progress"><span id="summaryBar" style="width:55%;"></span></div>
+                </div>
+
+                <div class="summary-card summary-card--accent summary-card--stacked">
+                    <p class="summary-label"><i data-lucide="landmark" class="icon-sm"></i> Costo total</p>
+                    <p class="summary-value">$<span id="summaryCost">3,210</span></p>
+                    <p class="summary-unit">COP</p>
+                </div>
+            </section>
         </div>
 
         <div class="dash-sidebar-bottom">
@@ -119,7 +136,11 @@
                             <label for="origen">Origen</label>
                             <div class="route-input">
                                 <input type="text" id="origen" placeholder="Ingresa la estación de origen" autocomplete="off">
+                                <button type="button" class="station-dropdown-toggle" data-for="origen" aria-label="Ver todas las estaciones" title="Ver todas las estaciones">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
                             </div>
+                            <!-- El panel de estaciones (agrupado por línea) se inserta aquí por JS -->
                         </div>
                     </div>
 
@@ -131,7 +152,11 @@
                             <label for="destino">Destino</label>
                             <div class="route-input">
                                 <input type="text" id="destino" placeholder="Ingresa la estación de destino" autocomplete="off">
+                                <button type="button" class="station-dropdown-toggle" data-for="destino" aria-label="Ver todas las estaciones" title="Ver todas las estaciones">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
                             </div>
+                            <!-- El panel de estaciones (agrupado por línea) se inserta aquí por JS -->
                         </div>
                     </div>
 
@@ -140,34 +165,20 @@
                     </button>
                 </div>
 
-                <h2 class="panel-subtitle">Resumen de la ruta</h2>
-
-                <div class="summary-grid">
-                    <div class="summary-card">
-                        <p class="summary-label"><i data-lucide="clock" class="icon-sm"></i> Tiempo aproximado</p>
-                        <p class="summary-value"><span id="summaryTime">14</span> <span class="summary-unit">min</span></p>
-                        <div class="summary-progress"><span id="summaryBar" style="width:55%;"></span></div>
-                    </div>
-
-                    <div class="summary-card summary-card--accent">
-                        <p class="summary-label"><i data-lucide="landmark" class="icon-sm"></i> Costo total</p>
-                        <p class="summary-value">$<span id="summaryCost">3,210</span></p>
-                        <p class="summary-unit">COP</p>
-                    </div>
-                </div>
-
-                <div class="transfer-alert" id="transferAlert" hidden>
-                    <i data-lucide="alarm-clock" class="icon-sm"></i>
-                    <span id="transferAlertText"></span>
-                    <button class="transfer-alert-close" id="transferAlertClose" aria-label="Cerrar aviso" title="Cerrar">
-                        <i data-lucide="x"></i>
-                    </button>
-                </div>
-
                 <button class="btn-navigate" id="btnNavigate">
                     <i data-lucide="navigation"></i>
                     Iniciar Navegación
                 </button>
+
+                <h2 class="panel-subtitle panel-subtitle--tight">Indicaciones del viaje</h2>
+
+                <div class="directions-panel" id="directionsPanel">
+                    <div class="directions-placeholder" id="directionsPlaceholder">
+                        <i data-lucide="route"></i>
+                        <p>Ingresa un origen y un destino, luego pulsa <strong>Iniciar Navegación</strong> para ver el paso a paso.</p>
+                    </div>
+                    <ol class="directions-list" id="directionsList"></ol>
+                </div>
             </aside>
         </div>
 
@@ -310,6 +321,6 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="pruebas.js"></script>
+<script src="mapa.js"></script>
 </body>
 </html>
