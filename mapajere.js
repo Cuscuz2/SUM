@@ -191,6 +191,15 @@ const ESTACIONES_J = [
     { nombre: 'La Aurora', lat: 6.2811, lon: -75.61421, dir: 'Calle 64 con Carrera 104, Medellín' }
 ];
 
+// Metrocable — Línea P / Metrocable Picacho (Acevedo ↔ El Progreso), inaugurada el 10 de junio de 2021.
+// Recorre las comunas 5 (Castilla) y 6 (Doce de Octubre) hasta el Cerro El Picacho, en límites con Bello.
+const ESTACIONES_P = [
+    { nombre: 'Acevedo', lat: 6.30028, lon: -75.55847, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
+    { nombre: 'Sena', lat: 6.30168, lon: -75.56648, dir: 'Calle 104 # 67-32, barrio Pedregal (Castilla), Medellín' },
+    { nombre: 'Doce de Octubre', lat: 6.30309, lon: -75.57449, dir: 'Barrio Doce de Octubre, comuna 6 (aprox.), Medellín' },
+    { nombre: 'El Progreso', lat: 6.30449, lon: -75.58251, dir: 'Carrera 83A con Calle 104C (aprox.), junto al Cerro El Picacho, Bello' }
+];
+
 // Metroplús — Línea 1 (Universidad de Medellín ↔ Parque de Aranjuez, por Av. Ferrocarril)
 const ESTACIONES_MP1 = [
     { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913, dir: 'Carrera 87B con Calle 30A, Medellín' },
@@ -251,6 +260,7 @@ const LINEAS = {
     l:       { estaciones: ESTACIONES_L,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
     h:       { estaciones: ESTACIONES_H,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
     j:       { estaciones: ESTACIONES_J,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
+    p:       { estaciones: ESTACIONES_P,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
     mp1:     { estaciones: ESTACIONES_MP1,     color: '#e11d48', dash: '6 4',    categoria: 'metroplus' },
     mp2:     { estaciones: ESTACIONES_MP2,     color: '#e11d48', dash: '6 4',    categoria: 'metroplus' },
     tranvia: { estaciones: ESTACIONES_TRANVIA, color: '#7c3aed', dash: '2 8',    categoria: 'tranvia' }
@@ -274,10 +284,11 @@ const ETIQUETAS_LINEA = {
     j:       'Metrocable J',
     h:       'Metrocable H',
     l:       'Metrocable L',
+    p:       'Metrocable Picacho (P)',
     mp1:     'Metroplús · Línea 1',
     mp2:     'Metroplús · Línea 2'
 };
-const ORDEN_LINEAS = ['a', 'b', 'tranvia', 'k', 'j', 'h', 'l', 'mp1', 'mp2'];
+const ORDEN_LINEAS = ['a', 'b', 'tranvia', 'k', 'j', 'h', 'l', 'p', 'mp1', 'mp2'];
 
 /* ---------- Etiqueta/color visual de cada línea (para las indicaciones) ---------- */
 function infoDeLinea(claveLinea) {
