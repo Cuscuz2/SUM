@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Administración - SUM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@0.263.0"></script>
+
+<link rel="stylesheet" href="mapa.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="dash-body">
+
+<div class="dash-shell">
+
+    <!-- ====== BARRA LATERAL ====== -->
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-top">
+            <div class="dash-logo">
+                <img src="iconoverde.png" alt="Tren" class="dash-logo-img">
+                <span class="dash-logo-text">SUM <span class="admin-badge">Admin</span></span>
+            </div>
+
+            <nav class="dash-nav">
+                <a href="#" class="dash-nav-item active" data-target="view-tarifas">
+                    <i data-lucide="landmark"></i>
+                    <span>Tarifas y precios</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-estaciones">
+                    <i data-lucide="map-pin"></i>
+                    <span>Estaciones y líneas</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-reportes">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Reportes y estadísticas</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-usuarios">
+                    <i data-lucide="users"></i>
+                    <span>Usuarios registrados</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-avisos">
+                    <i data-lucide="megaphone"></i>
+                    <span>Avisos y notificaciones</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="dash-sidebar-bottom">
+            <a href="mapa.html" class="dash-nav-item dash-nav-item-muted">
+                <i data-lucide="arrow-left"></i>
+                <span>Volver al panel de usuario</span>
+            </a>
+            <a href="#" class="dash-nav-item dash-nav-item-muted" id="btnCerrarSesionAdmin">
+                <i data-lucide="log-out"></i>
+                <span>Cerrar sesión de administrador</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ====== CONTENEDOR PRINCIPAL DE VISTAS ====== -->
+    <main class="dash-main-content">
+
+        <!-- ===== TARIFAS Y PRECIOS ===== -->
+        <div id="view-tarifas" class="dash-view active">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Tarifas y precios</h2>
+                    <p>Actualiza los valores que ven los usuarios en Configuración.</p>
+                </div>
+
+                <div class="simple-card">
+                    <h4 class="admin-card-title">Tarifas generales</h4>
+                    <div class="admin-tarifa-row">
+                        <label>Frecuente</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="3820"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Estudiantil</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="1600"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Adulto Mayor</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="3330"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Persona con Discapacidad</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="2720"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Eventual</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="4400"></div>
+                    </div>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Metrocable Arví (Línea L)</h4>
+                    <div class="admin-tarifa-row">
+                        <label>Estratos 1, 2 y 3 - Cívica</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="3900"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Nacionales / Cívica Personalizada</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="11900"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Extranjeros / Público General</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" value="26700"></div>
+                    </div>
+                </div>
+
+                <button class="btn-navigate" id="btnGuardarTarifas" style="margin-top:20px;">
+                    <i data-lucide="check"></i>
+                    Guardar cambios
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== ESTACIONES Y LÍNEAS ===== -->
+        <div id="view-estaciones" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Estaciones y líneas</h2>
+                    <p>Administra las estaciones que aparecen en el mapa y el buscador.</p>
+                </div>
+
+                <div class="admin-toolbar">
+                    <div class="admin-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" placeholder="Buscar estación...">
+                    </div>
+                    <button class="btn-navigate" id="btnNuevaEstacion">
+                        <i data-lucide="plus"></i>
+                        Nueva estación
+                    </button>
+                </div>
+
+                <div class="simple-card admin-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Estación</th>
+                                <th>Línea</th>
+                                <th>Dirección</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEstaciones">
+                            <!-- Ejemplo de fila; conectar con el listado real de estaciones -->
+                            <tr>
+                                <td>San Antonio</td>
+                                <td><span class="admin-tag admin-tag--a">Línea A</span></td>
+                                <td>Cra. 52 con Cl. 44</td>
+                                <td><span class="admin-status admin-status--ok">Activa</span></td>
+                                <td class="admin-row-actions">
+                                    <button class="admin-icon-btn" title="Editar"><i data-lucide="pencil"></i></button>
+                                    <button class="admin-icon-btn admin-icon-btn--danger" title="Desactivar"><i data-lucide="trash-2"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="admin-table-hint">Conecta esta tabla con tu listado real de estaciones (por ejemplo, ../PHP/estaciones.php).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REPORTES Y ESTADÍSTICAS ===== -->
+        <div id="view-reportes" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Reportes y estadísticas</h2>
+                    <p>Visión general del uso del sistema por todos los usuarios.</p>
+                </div>
+
+                <div class="history-stats">
+                    <div class="stat-box">
+                        <i data-lucide="users"></i>
+                        <div>
+                            <h4 id="statUsuariosTotal">…</h4>
+                            <span>Usuarios registrados</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i data-lucide="route"></i>
+                        <div>
+                            <h4 id="statViajesTotal">…</h4>
+                            <span>Viajes este mes</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i data-lucide="piggy-bank"></i>
+                        <div>
+                            <h4 id="statIngresoTotal">…</h4>
+                            <span>Ingresos del mes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Estaciones más usadas</h4>
+                    <p class="admin-placeholder-text">
+                        Aquí puedes mostrar una gráfica o tabla con las estaciones de origen/destino
+                        más frecuentes, alimentada desde tu backend (por ejemplo, ../PHP/reportes.php).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== USUARIOS REGISTRADOS ===== -->
+        <div id="view-usuarios" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Usuarios registrados</h2>
+                    <p>Consulta y administra las cuentas de los usuarios del sistema.</p>
+                </div>
+
+                <div class="admin-toolbar">
+                    <div class="admin-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" placeholder="Buscar por nombre o correo...">
+                    </div>
+                </div>
+
+                <div class="simple-card admin-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Correo</th>
+                                <th>Tipo de tarifa</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaUsuarios">
+                            <!-- Ejemplo de fila; conectar con el listado real de usuarios -->
+                            <tr>
+                                <td>Usuario de ejemplo</td>
+                                <td>usuario@correo.com</td>
+                                <td>Frecuente</td>
+                                <td><span class="admin-status admin-status--ok">Activo</span></td>
+                                <td class="admin-row-actions">
+                                    <button class="admin-icon-btn" title="Ver detalle"><i data-lucide="eye"></i></button>
+                                    <button class="admin-icon-btn admin-icon-btn--danger" title="Suspender"><i data-lucide="ban"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="admin-table-hint">Conecta esta tabla con tu listado real de usuarios (por ejemplo, ../PHP/usuarios.php).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== AVISOS Y NOTIFICACIONES ===== -->
+        <div id="view-avisos" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Avisos y notificaciones</h2>
+                    <p>Envía un mensaje a todos los usuarios o a un grupo específico.</p>
+                </div>
+
+                <div class="simple-card">
+                    <div class="form-field">
+                        <label for="avisoDestino">Destinatarios</label>
+                        <select class="select-input" id="avisoDestino" style="width:100%;">
+                            <option value="todos" selected>Todos los usuarios</option>
+                            <option value="frecuente">Solo tarifa Frecuente</option>
+                            <option value="estudiantil">Solo tarifa Estudiantil</option>
+                            <option value="adulto_mayor">Solo Adulto Mayor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field" style="margin-top:16px;">
+                        <label for="avisoTitulo">Título del aviso</label>
+                        <input type="text" id="avisoTitulo" class="form-input" placeholder="Ej: Cierre temporal Línea A">
+                    </div>
+
+                    <div class="form-field" style="margin-top:16px;">
+                        <label for="avisoMensaje">Mensaje</label>
+                        <textarea id="avisoMensaje" class="form-input admin-textarea" rows="4" placeholder="Escribe el mensaje que verán los usuarios..."></textarea>
+                    </div>
+
+                    <button class="btn-navigate" id="btnEnviarAviso" style="margin-top:20px;">
+                        <i data-lucide="send"></i>
+                        Enviar aviso
+                    </button>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Avisos enviados recientemente</h4>
+                    <p class="admin-placeholder-text">
+                        Aquí puedes listar el historial de avisos enviados, alimentado desde tu
+                        backend (por ejemplo, ../PHP/avisos.php).
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
