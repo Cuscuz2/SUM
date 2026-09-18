@@ -22,11 +22,20 @@ const capasMetro = {};
 // ⚠️ Clave API de CARTO Basemaps
 const CARTO_API_KEY = 'cb1_2883_1_32f0bf1288bfd12fd81c1134';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     if (window.lucide) lucide.createIcons();
+
+    try {
+        await cargarRedMetro();
+    } catch (err) {
+        console.error('No se pudo cargar la red del sistema:', err);
+        mostrarToast('No se pudo cargar el mapa. Intenta recargar la página.');
+        return; // sin la red no hay nada que dibujar ni rutas que calcular
+    }
 
     inicializarMapa();
     dibujarRedCompleta();
+    construirGrafo();
 
     configurarZoom();
     configurarUbicacion();
@@ -38,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
     configurarAutocompletado();
     configurarCambioTarifa();
     configurarUsuario();
-    configurarAdminAccess();
 
     // Navegación entre pestañas (Panel, Historial, Configuración, Soporte)
     configurarNavegacionMenu();
@@ -121,186 +129,30 @@ function inicializarMapa() {
 }
 
 /* =========================================================
-   RED COMPLETA DEL SISTEMA (datos reales, fuente GTFS oficial)
-   Cada estación incluye "dir": la dirección de acceso a la estación.
+   RED COMPLETA DEL SISTEMA
+   Antes vivía hardcodeada aquí. Ahora se pide una sola vez al backend
+   (PHP/lineas.php) al cargar la página, para poder editar estaciones o
+   agregar líneas nuevas sin tocar este archivo. Ver cargarRedMetro().
    ========================================================= */
+let LINEAS = {};
+let CATEGORIAS_LEYENDA = [];
+let ETIQUETAS_LINEA = {};
+let ORDEN_LINEAS = [];
 
-// Metro — Línea A (Niquía ↔ La Estrella)
-const ESTACIONES_A = [
-    { nombre: 'Niquía', lat: 6.33788, lon: -75.54433, dir: 'Diagonal 50A # 37-01, Bello' },
-    { nombre: 'Bello', lat: 6.32989, lon: -75.55375, dir: 'Calle 44 # 46-001, Bello' },
-    { nombre: 'Madera', lat: 6.31603, lon: -75.55534, dir: 'Carrera 49 # 25B-20, Bello' },
-    { nombre: 'Acevedo', lat: 6.29986, lon: -75.55853, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
-    { nombre: 'Tricentenario', lat: 6.29031, lon: -75.56473, dir: 'Carrera 63 # 94A-518 (acceso norte), Medellín' },
-    { nombre: 'Caribe', lat: 6.27828, lon: -75.56937, dir: 'Carrera 64 # 75B-600 (acceso norte), Medellín' },
-    { nombre: 'Universidad', lat: 6.26933, lon: -75.56577, dir: 'Calle 73 # 52-40, Medellín' },
-    { nombre: 'Hospital', lat: 6.26368, lon: -75.56344, dir: 'Carrera 51 # 65-85, Medellín' },
-    { nombre: 'Prado', lat: 6.25679, lon: -75.56605, dir: 'Carrera 51D # 57-100, Medellín' },
-    { nombre: 'Parque Berrío', lat: 6.25054, lon: -75.56828, dir: 'Carrera 51 con Calle 50 (aprox.), Medellín' },
-    { nombre: 'San Antonio', lat: 6.24707, lon: -75.56969, dir: 'Carrera 51 con Calle 46, Medellín' },
-    { nombre: 'Alpujarra', lat: 6.24292, lon: -75.57136, dir: 'Carrera 51 # 41-43, Medellín' },
-    { nombre: 'Exposiciones', lat: 6.23843, lon: -75.57322, dir: 'Carrera 51 con Calle 37, Medellín' },
-    { nombre: 'Industriales', lat: 6.23002, lon: -75.57561, dir: 'Carrera 49 # 24-435, Medellín' },
-    { nombre: 'Poblado', lat: 6.21196, lon: -75.57806, dir: 'Avenida El Poblado, sector Astorga (aprox.), Medellín' },
-    { nombre: 'Aguacatala', lat: 6.19377, lon: -75.58192, dir: 'Carrera 48C # 12 Sur-50, Medellín' },
-    { nombre: 'Ayurá', lat: 6.18601, lon: -75.5862, dir: 'Avenida Regional con Calle 32 Sur (aprox.), Envigado' },
-    { nombre: 'Envigado', lat: 6.17469, lon: -75.59706, dir: 'Carrera 42 # 59A-291, Envigado' },
-    { nombre: 'Itagüí', lat: 6.16296, lon: -75.60671, dir: 'Carrera 49 # 50 Sur-80, Itagüí' },
-    { nombre: 'Sabaneta', lat: 6.15789, lon: -75.61604, dir: 'Carrera 49 # 67 Sur, Sabaneta' },
-    { nombre: 'La Estrella', lat: 6.15263, lon: -75.62646, dir: 'Carrera 49 # 77 Sur, La Estrella' }
-];
+// Pide al backend la definición completa de líneas/estaciones. Se llama
+// una sola vez, antes de dibujar el mapa o calcular cualquier ruta.
+async function cargarRedMetro() {
+    const res = await fetch(API_BASE + 'lineas.php', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (!data.exito) {
+        throw new Error(data.mensaje || 'No se pudo cargar la red del sistema.');
+    }
+    LINEAS = data.red.LINEAS;
+    CATEGORIAS_LEYENDA = data.red.CATEGORIAS_LEYENDA;
+    ETIQUETAS_LINEA = data.red.ETIQUETAS_LINEA;
+    ORDEN_LINEAS = data.red.ORDEN_LINEAS;
+}
 
-// Metro — Línea B (San Antonio ↔ San Javier)
-const ESTACIONES_B = [
-    { nombre: 'San Antonio', lat: 6.24715, lon: -75.56968, dir: 'Carrera 51 con Calle 46, Medellín' },
-    { nombre: 'Cisneros', lat: 6.24901, lon: -75.57511, dir: 'Carrera 57 # 45A-50, Medellín' },
-    { nombre: 'Suramericana', lat: 6.253, lon: -75.58302, dir: 'Carrera 65 con Calle 44 (aprox.), Medellín' },
-    { nombre: 'Estadio', lat: 6.25332, lon: -75.58824, dir: 'Carrera 70 # 47D-15, Medellín' },
-    { nombre: 'Floresta', lat: 6.2587, lon: -75.5977, dir: 'Carrera 80 # 47D-30, Medellín' },
-    { nombre: 'Santa Lucía', lat: 6.25806, lon: -75.60377, dir: 'Calle 47DD # 86-53, Medellín' },
-    { nombre: 'San Javier', lat: 6.25686, lon: -75.61378, dir: 'Carrera 99 # 45-26, Medellín' }
-];
-
-// Tranvía de Ayacucho (San Antonio ↔ Oriente) — con todas las estaciones intermedias
-const ESTACIONES_TRANVIA = [
-    { nombre: 'San Antonio', lat: 6.247, lon: -75.56913, dir: 'Carrera 51 con Calle 46, Medellín' },
-    { nombre: 'San José', lat: 6.24737, lon: -75.5655, dir: 'Avenida Oriental con Calle 49 (aprox.), Medellín' },
-    { nombre: 'Pabellón del Agua', lat: 6.24555, lon: -75.56182, dir: 'Avenida Ayacucho, barrio Barrio Colón (aprox.), Medellín' },
-    { nombre: 'Bicentenario', lat: 6.24386, lon: -75.55853, dir: 'Avenida Ayacucho, barrio Boston (aprox.), Medellín' },
-    { nombre: 'Buenos Aires', lat: 6.2415, lon: -75.55389, dir: 'Avenida Ayacucho con Carrera 29 (aprox.), Medellín' },
-    { nombre: 'Miraflores', lat: 6.24148, lon: -75.54907, dir: 'Avenida Ayacucho, barrio Miraflores (aprox.), Medellín' },
-    { nombre: 'Loyola', lat: 6.23924, lon: -75.54524, dir: 'Avenida Ayacucho, barrio Loyola (aprox.), Medellín' },
-    { nombre: 'Alejandro Echavarría', lat: 6.2354, lon: -75.54153, dir: 'Barrio Alejandro Echavarría (aprox.), Medellín' },
-    { nombre: 'Oriente', lat: 6.23304, lon: -75.54001, dir: 'Barrio Oriente, comuna 8 (aprox.), Medellín' }
-];
-
-// Metrocable — Línea K (Acevedo ↔ Santo Domingo)
-const ESTACIONES_K = [
-    { nombre: 'Acevedo', lat: 6.30025, lon: -75.55827, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
-    { nombre: 'Andalucía', lat: 6.29618, lon: -75.55193, dir: 'Carrera 46A # 107-3, Medellín' },
-    { nombre: 'Popular', lat: 6.29513, lon: -75.54815, dir: 'Carrera 42B # 107-61, Medellín' },
-    { nombre: 'Santo Domingo', lat: 6.29316, lon: -75.54172, dir: 'Carrera 51A # 46-08, Medellín' }
-];
-
-// Metrocable — Línea L (Santo Domingo ↔ Arví)
-const ESTACIONES_L = [
-    { nombre: 'Santo Domingo', lat: 6.29274, lon: -75.5419, dir: 'Carrera 51A # 46-08, Medellín' },
-    { nombre: 'Arví', lat: 6.28153, lon: -75.50293, dir: 'Parque Arví, vereda Piedras Blancas, Santa Elena (aprox.), Medellín' }
-];
-
-// Metrocable — Línea P / Metrocable Picacho (Acevedo ↔ El Progreso), inaugurada el 10 de junio de 2021.
-// Recorre las comunas 5 (Castilla) y 6 (Doce de Octubre) hasta el Cerro El Picacho, en límites con Bello.
-const ESTACIONES_P = [
-    { nombre: 'Acevedo', lat: 6.30028, lon: -75.55847, dir: 'Carrera 63 # 103G-202 (acceso norte), Medellín' },
-    { nombre: 'Sena', lat: 6.30168, lon: -75.56648, dir: 'Calle 104 # 67-32, barrio Pedregal (Castilla), Medellín' },
-    { nombre: 'Doce de Octubre', lat: 6.30309, lon: -75.57449, dir: 'Barrio Doce de Octubre, comuna 6 (aprox.), Medellín' },
-    { nombre: 'El Progreso', lat: 6.30449, lon: -75.58251, dir: 'Carrera 83A con Calle 104C (aprox.), junto al Cerro El Picacho, Bello' }
-];
-
-// Metrocable — Línea H (Oriente ↔ Villa Sierra)
-const ESTACIONES_H = [
-    { nombre: 'Oriente', lat: 6.2332, lon: -75.54, dir: 'Barrio Oriente, comuna 8 (aprox.), Medellín' },
-    { nombre: 'Las Torres', lat: 6.23655, lon: -75.53628, dir: 'Barrio Las Torres, comuna 8 (aprox.), Medellín' },
-    { nombre: 'Villa Sierra', lat: 6.23499, lon: -75.52864, dir: 'Barrio La Sierra, comuna 8 (aprox.), Medellín' }
-];
-
-// Metrocable — Línea J (San Javier ↔ La Aurora)
-const ESTACIONES_J = [
-    { nombre: 'San Javier', lat: 6.25679, lon: -75.61341, dir: 'Carrera 99 # 45-26, Medellín' },
-    { nombre: 'Juan XXIII', lat: 6.26569, lon: -75.61369, dir: 'Carrera 99CD con Calle 48B, Medellín' },
-    { nombre: 'Vallejuelos', lat: 6.27538, lon: -75.61402, dir: 'Calle 61B con Carrera 104, Medellín' },
-    { nombre: 'La Aurora', lat: 6.2811, lon: -75.61421, dir: 'Calle 64 con Carrera 104, Medellín' }
-];
-
-// Metroplús — Línea 1 (Universidad de Medellín ↔ Parque de Aranjuez, por Av. Ferrocarril)
-const ESTACIONES_MP1 = [
-    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913, dir: 'Carrera 87B con Calle 30A, Medellín' },
-    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506, dir: 'Carrera 84 con Calle 30A, Medellín' },
-    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106, dir: 'Carrera 81 con Calle 30A, Medellín' },
-    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675, dir: 'Carrera 76 con Calle 30A, Medellín' },
-    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096, dir: 'Carrera 73 con Calle 30A, Medellín' },
-    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655, dir: 'Carrera 70 con Calle 30A, Medellín' },
-    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206, dir: 'Carrera 65 con Avenida 33, Medellín' },
-    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652, dir: 'Avenida Ferrocarril con Calle 30, Medellín' },
-    { nombre: 'Plaza Mayor', lat: 6.2437, lon: -75.57529, dir: 'Calle 41 con Carrera 52 (aprox.), Medellín' },
-    { nombre: 'Cisneros', lat: 6.24874, lon: -75.57503, dir: 'Carrera 57 # 45A-50, Medellín' },
-    { nombre: 'Minorista', lat: 6.2561, lon: -75.57312, dir: 'Carrera 57 # 54-01, Medellín' },
-    { nombre: 'Chagualo', lat: 6.26073, lon: -75.56913, dir: 'Carrera 55 con Calle 65 (aprox.), Medellín' },
-    { nombre: 'Ruta N - U. de A.', lat: 6.26355, lon: -75.56764, dir: 'Carrera 55 # 65-01, Medellín' },
-    { nombre: 'Hospital', lat: 6.26383, lon: -75.56313, dir: 'Carrera 51 # 65-85, Medellín' },
-    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017, dir: 'Carrera 51 con Calle 68 (aprox.), Medellín' }, // fuera de servicio operativo actualmente
-    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581, dir: 'Carrera 45 # 66-01, Medellín' },
-    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495, dir: 'Carrera 45 con Calle 70 (aprox.), Medellín' },
-    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401, dir: 'Carrera 45 con Calle 73 (aprox.), Medellín' },
-    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312, dir: 'Carrera 45 con Calle 78 (aprox.), Medellín' },
-    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285, dir: 'Carrera 45 con Calle 83 (aprox.), Medellín' },
-    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663, dir: 'Carrera 49A # 93-00, Medellín' }
-];
-
-// Metroplús — Línea 2 (Universidad de Medellín ↔ Parque de Aranjuez, por Av. Oriental)
-const ESTACIONES_MP2 = [
-    { nombre: 'U. de M.', lat: 6.2306, lon: -75.60913, dir: 'Carrera 87B con Calle 30A, Medellín' },
-    { nombre: 'Los Alpes', lat: 6.23103, lon: -75.60506, dir: 'Carrera 84 con Calle 30A, Medellín' },
-    { nombre: 'La Palma', lat: 6.2311, lon: -75.60106, dir: 'Carrera 81 con Calle 30A, Medellín' },
-    { nombre: 'Parque Belén', lat: 6.23133, lon: -75.59675, dir: 'Carrera 76 con Calle 30A, Medellín' },
-    { nombre: 'Rosales', lat: 6.23153, lon: -75.59096, dir: 'Carrera 73 con Calle 30A, Medellín' },
-    { nombre: 'Fátima', lat: 6.2316, lon: -75.58655, dir: 'Carrera 70 con Calle 30A, Medellín' },
-    { nombre: 'Nutibara', lat: 6.23171, lon: -75.58206, dir: 'Carrera 65 con Avenida 33, Medellín' },
-    { nombre: 'Industriales', lat: 6.23022, lon: -75.57652, dir: 'Avenida Ferrocarril con Calle 30, Medellín' },
-    { nombre: 'Barrio Colombia', lat: 6.22864, lon: -75.571, dir: 'Carrera 52 con Calle 30 (aprox.), Medellín' },
-    { nombre: 'Barrio San Diego', lat: 6.23358, lon: -75.57002, dir: 'Carrera 46 con Calle 34 (aprox.), Medellín' },
-    { nombre: 'Barrio Colón', lat: 6.24057, lon: -75.56971, dir: 'Carrera 45 con Calle 44 (aprox.), Medellín' },
-    { nombre: 'San José', lat: 6.24658, lon: -75.56644, dir: 'Avenida Oriental con Calle 49 (aprox.), Medellín' },
-    { nombre: 'La Playa', lat: 6.24933, lon: -75.56446, dir: 'Carrera 45 con Avenida La Playa (aprox.), Medellín' },
-    { nombre: 'Catedral Metropolitana', lat: 6.25293, lon: -75.56238, dir: 'Parque Bolívar (aprox.), Medellín' },
-    { nombre: 'Prado', lat: 6.25783, lon: -75.56551, dir: 'Carrera 51 con Calle 57 (aprox.), Medellín' },
-    { nombre: 'Hospital', lat: 6.26293, lon: -75.56356, dir: 'Carrera 51 # 65-85, Medellín' },
-    { nombre: 'San Pedro', lat: 6.26339, lon: -75.56017, dir: 'Carrera 51 con Calle 68 (aprox.), Medellín' },
-    { nombre: 'Palos Verdes', lat: 6.26208, lon: -75.55581, dir: 'Carrera 45 # 66-01, Medellín' },
-    { nombre: 'Gardel', lat: 6.26768, lon: -75.55495, dir: 'Carrera 45 con Calle 70 (aprox.), Medellín' },
-    { nombre: 'Manrique', lat: 6.27322, lon: -75.55401, dir: 'Carrera 45 con Calle 73 (aprox.), Medellín' },
-    { nombre: 'Las Esmeraldas', lat: 6.27838, lon: -75.55312, dir: 'Carrera 45 con Calle 78 (aprox.), Medellín' },
-    { nombre: 'Berlín', lat: 6.28287, lon: -75.55285, dir: 'Carrera 45 con Calle 83 (aprox.), Medellín' },
-    { nombre: 'Parque Aranjuez', lat: 6.28519, lon: -75.55663, dir: 'Carrera 49A # 93-00, Medellín' }
-];
-
-// Definición de cada línea: color, tipo, estilo de trazo y categoría de leyenda
-const LINEAS = {
-    a:       { estaciones: ESTACIONES_A,       color: '#2563eb', dash: null,     categoria: 'metro-a' },
-    b:       { estaciones: ESTACIONES_B,       color: '#f5a623', dash: null,     categoria: 'metro-b' },
-    k:       { estaciones: ESTACIONES_K,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
-    l:       { estaciones: ESTACIONES_L,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
-    p:       { estaciones: ESTACIONES_P,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
-    h:       { estaciones: ESTACIONES_H,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
-    j:       { estaciones: ESTACIONES_J,       color: '#0d9488', dash: '2 8',    categoria: 'metrocable' },
-    mp1:     { estaciones: ESTACIONES_MP1,     color: '#e11d48', dash: '6 4',    categoria: 'metroplus' },
-    mp2:     { estaciones: ESTACIONES_MP2,     color: '#e11d48', dash: '6 4',    categoria: 'metroplus' },
-    tranvia: { estaciones: ESTACIONES_TRANVIA, color: '#7c3aed', dash: '2 8',    categoria: 'tranvia' }
-};
-
-// Categorías visibles en la leyenda del mapa (agrupan varias líneas si aplica)
-const CATEGORIAS_LEYENDA = [
-    { id: 'metro-a',    etiqueta: 'Línea A',    color: '#2563eb' },
-    { id: 'metro-b',    etiqueta: 'Línea B',    color: '#f5a623' },
-    { id: 'metrocable', etiqueta: 'Metrocable', color: '#0d9488' },
-    { id: 'metroplus',  etiqueta: 'Metroplús',  color: '#e11d48' },
-    { id: 'tranvia',    etiqueta: 'Tranvía',    color: '#7c3aed' }
-];
-
-// Etiquetas y orden de presentación de cada línea en el buscador de estaciones
-const ETIQUETAS_LINEA = {
-    a:       'Línea A · Metro',
-    b:       'Línea B · Metro',
-    tranvia: 'Tranvía de Ayacucho',
-    k:       'Metrocable K',
-    j:       'Metrocable J',
-    h:       'Metrocable H',
-    l:       'Metrocable L',
-    p:       'Metrocable Picacho (P)',
-    mp1:     'Metroplús · Línea 1',
-    mp2:     'Metroplús · Línea 2'
-};
-const ORDEN_LINEAS = ['a', 'b', 'tranvia', 'k', 'j', 'h', 'l', 'p', 'mp1', 'mp2'];
 
 /* ---------- Etiqueta/color visual de cada línea (para las indicaciones) ---------- */
 function infoDeLinea(claveLinea) {
@@ -499,112 +351,6 @@ function configurarCambioTarifa() {
             if (origen && destino) calcularRuta();
         });
     });
-}
-
-/* =========================================================
-   ACCESO DE ADMINISTRADOR (Configuración -> modal de contraseña)
-   ========================================================= */
-
-// URL a la que se redirige tras validar la contraseña correctamente.
-// Cámbiala cuando tengas la página real del panel de administración.
-const ADMIN_REDIRECT_URL = 'admin.html';
-
-function configurarAdminAccess() {
-    const btnAbrir = document.getElementById('btnIngresarAdmin');
-    const overlay = document.getElementById('adminModalOverlay');
-    const btnCerrar = document.getElementById('adminModalClose');
-    const form = document.getElementById('adminModalForm');
-    const input = document.getElementById('adminPassword');
-    const btnToggle = document.getElementById('adminPasswordToggle');
-    const errorMsg = document.getElementById('adminModalError');
-    const btnSubmit = document.getElementById('btnAdminSubmit');
-    const btnSubmitText = document.getElementById('btnAdminSubmitText');
-
-    if (!btnAbrir || !overlay) return;
-
-    function abrirModal() {
-        overlay.classList.add('show');
-        errorMsg.style.display = 'none';
-        input.value = '';
-        input.type = 'password';
-        if (window.lucide) lucide.createIcons();
-        setTimeout(() => input.focus(), 50);
-    }
-
-    function cerrarModal() {
-        overlay.classList.remove('show');
-    }
-
-    btnAbrir.addEventListener('click', abrirModal);
-    btnCerrar.addEventListener('click', cerrarModal);
-
-    // Cerrar al hacer clic fuera de la tarjeta del modal
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) cerrarModal();
-    });
-
-    // Cerrar con la tecla Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('show')) cerrarModal();
-    });
-
-    // Mostrar/ocultar la contraseña escrita
-    btnToggle.addEventListener('click', () => {
-        const esOculta = input.type === 'password';
-        input.type = esOculta ? 'text' : 'password';
-        btnToggle.innerHTML = esOculta
-            ? '<i data-lucide="eye-off"></i>'
-            : '<i data-lucide="eye"></i>';
-        if (window.lucide) lucide.createIcons();
-    });
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const clave = input.value.trim();
-        errorMsg.style.display = 'none';
-
-        if (!clave) {
-            errorMsg.textContent = 'Ingresa la contraseña.';
-            errorMsg.style.display = 'block';
-            return;
-        }
-
-        btnSubmit.disabled = true;
-        btnSubmitText.textContent = 'Verificando...';
-
-        try {
-            const ok = await verificarPasswordAdmin(clave);
-            if (ok) {
-                window.location.href = ADMIN_REDIRECT_URL;
-            } else {
-                errorMsg.textContent = 'Contraseña incorrecta. Intenta de nuevo.';
-                errorMsg.style.display = 'block';
-                input.value = '';
-                input.focus();
-            }
-        } catch (err) {
-            console.warn('Error al verificar el acceso de administrador:', err);
-            errorMsg.textContent = 'No se pudo validar el acceso. Intenta más tarde.';
-            errorMsg.style.display = 'block';
-        } finally {
-            btnSubmit.disabled = false;
-            btnSubmitText.textContent = 'Ingresar';
-        }
-    });
-}
-
-// Envía la contraseña al backend para que la valide contra la cuenta
-// de administrador. El endpoint solo debe responder { exito: true/false }
-// y nunca confirmar ni exponer la contraseña real.
-async function verificarPasswordAdmin(password) {
-    const res = await fetch(API_BASE + 'verificar_admin.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin', // envía la cookie de sesión PHP
-        body: JSON.stringify({ password })
-    });
-    const data = await res.json();
-    return !!data.exito;
 }
 
 /* =========================================================
@@ -992,13 +738,16 @@ function agregarArista(nombreA, nombreB, lineaKey) {
     if (!GRAFO.has(nombreA)) GRAFO.set(nombreA, []);
     GRAFO.get(nombreA).push({ hacia: nombreB, linea: lineaKey });
 }
-Object.entries(LINEAS).forEach(([clave, linea]) => {
-    const est = linea.estaciones;
-    for (let i = 0; i < est.length - 1; i++) {
-        agregarArista(est[i].nombre, est[i + 1].nombre, clave);
-        agregarArista(est[i + 1].nombre, est[i].nombre, clave);
-    }
-});
+// Se llama una sola vez, después de cargarRedMetro(), ya con LINEAS lista.
+function construirGrafo() {
+    Object.entries(LINEAS).forEach(([clave, linea]) => {
+        const est = linea.estaciones;
+        for (let i = 0; i < est.length - 1; i++) {
+            agregarArista(est[i].nombre, est[i + 1].nombre, clave);
+            agregarArista(est[i + 1].nombre, est[i].nombre, clave);
+        }
+    });
+}
 
 function encontrarRutaOptima(origenNombre, destinoNombre) {
     if (origenNombre === destinoNombre) return null;
