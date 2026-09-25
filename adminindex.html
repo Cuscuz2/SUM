@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Administración - SUM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://unpkg.com/lucide@0.263.0"></script>
+
+<!-- Leaflet (mapa del editor de Estaciones y líneas; el mismo que usa mapa.html) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<link rel="stylesheet" href="admin.css">
+<link rel="stylesheet" href="../MAPA/mapa.css">
+</head>
+<body class="dash-body">
+
+<div class="dash-shell">
+
+    <!-- ====== BARRA LATERAL ====== -->
+    <aside class="dash-sidebar">
+        <div class="dash-sidebar-top">
+            <div class="dash-logo">
+                <img src="iconoverde.png" alt="Tren" class="dash-logo-img">
+                <span class="dash-logo-text">SUM <span class="admin-badge">Admin</span></span>
+            </div>
+
+            <nav class="dash-nav">
+                <a href="#" class="dash-nav-item active" data-target="view-tarifas">
+                    <i data-lucide="landmark"></i>
+                    <span>Tarifas y precios</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-estaciones">
+                    <i data-lucide="map-pin"></i>
+                    <span>Estaciones y líneas</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-reportes">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Reportes y estadísticas</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-usuarios">
+                    <i data-lucide="users"></i>
+                    <span>Usuarios registrados</span>
+                </a>
+                <a href="#" class="dash-nav-item" data-target="view-avisos">
+                    <i data-lucide="megaphone"></i>
+                    <span>Avisos y notificaciones</span>
+                </a>
+            </nav>
+        </div>
+
+        <div class="dash-sidebar-bottom">
+            <a href="#" class="dash-nav-item dash-nav-item-muted" id="btnCerrarSesionAdmin">
+                <i data-lucide="log-out"></i>
+                <span>Cerrar sesión de administrador</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ====== CONTENEDOR PRINCIPAL DE VISTAS ====== -->
+    <main class="dash-main-content">
+
+        <!-- ===== TARIFAS Y PRECIOS ===== -->
+        <div id="view-tarifas" class="dash-view active">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Tarifas y precios</h2>
+                    <p>Actualiza los valores que ven los usuarios en Configuración.</p>
+                </div>
+
+                <div class="simple-card">
+                    <h4 class="admin-card-title">Tarifas generales</h4>
+                    <div class="admin-tarifa-row">
+                        <label>Frecuente</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="frecuente" value="3820"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Estudiantil</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="estudiantil" value="1600"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Adulto Mayor</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="adulto_mayor" value="3330"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Persona con Discapacidad</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="discapacidad" value="2720"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Eventual</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="eventual" value="4400"></div>
+                    </div>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Metrocable Arví (Línea L)</h4>
+                    <div class="admin-tarifa-row">
+                        <label>Estratos 1, 2 y 3 - Cívica</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="arvi_civica" value="3900"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Nacionales / Cívica Personalizada</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="arvi_nacional" value="11900"></div>
+                    </div>
+                    <div class="admin-tarifa-row">
+                        <label>Extranjeros / Público General</label>
+                        <div class="admin-tarifa-input"><span>$</span><input type="number" class="form-input" data-clave="arvi_extranjero" value="26700"></div>
+                    </div>
+                </div>
+
+                <button class="btn-navigate" id="btnGuardarTarifas" style="margin-top:20px;">
+                    <i data-lucide="check"></i>
+                    Guardar cambios
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== ESTACIONES Y LÍNEAS ===== -->
+        <div id="view-estaciones" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Estaciones y líneas</h2>
+                    <p>Cambia el recorrido de una línea, renombra estaciones o agrega nuevas. Al guardar, los usuarios ven el cambio en su mapa.</p>
+                </div>
+
+                <div class="red-layout">
+
+                    <!-- Panel de edición -->
+                    <section class="red-panel" aria-label="Editor de la red">
+                        <div class="red-tabs" role="tablist">
+                            <button type="button" class="red-tab active" role="tab" data-red-tab="lineas" aria-selected="true">Líneas</button>
+                            <button type="button" class="red-tab" role="tab" data-red-tab="estaciones" aria-selected="false">Estaciones</button>
+                        </div>
+
+                        <!-- ---------- PESTAÑA LÍNEAS ---------- -->
+                        <div class="red-tabpanel active" id="redTabLineas">
+
+                            <div class="red-vista active" id="redVistaListaLineas">
+                                <div class="red-scroll" id="redListaLineas">
+                                    <p class="red-vacio">Cargando líneas…</p>
+                                </div>
+                                <div class="red-pie">
+                                    <button type="button" class="btn-navigate" id="btnNuevaLinea">
+                                        <i data-lucide="plus"></i>
+                                        Nueva línea
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="red-vista" id="redVistaEditorLinea">
+                                <div class="red-cab">
+                                    <button type="button" class="red-volver" id="btnVolverLinea" aria-label="Volver a la lista de líneas">
+                                        <i data-lucide="arrow-left"></i>
+                                    </button>
+                                    <h4 id="redTituloLinea">Editar línea</h4>
+                                </div>
+
+                                <div class="red-scroll">
+                                    <div class="form-field">
+                                        <label for="lineaNombre">Nombre de la línea</label>
+                                        <input type="text" id="lineaNombre" class="form-input" maxlength="80" placeholder="Ej: Línea C · Metro" autocomplete="off">
+                                    </div>
+
+                                    <div class="red-fila-2">
+                                        <div class="form-field">
+                                            <label for="lineaTipo">Tipo de transporte</label>
+                                            <select id="lineaTipo" class="select-input">
+                                                <option value="metro">Metro</option>
+                                                <option value="metrocable">Metrocable</option>
+                                                <option value="metroplus">Metroplús</option>
+                                                <option value="tranvia">Tranvía</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="lineaColor">Color en el mapa</label>
+                                            <input type="color" id="lineaColor" class="red-color" value="#2563eb">
+                                        </div>
+                                    </div>
+
+                                    <div class="red-recorrido-cab">
+                                        <h5>Recorrido</h5>
+                                        <span id="redContadorRecorrido"></span>
+                                    </div>
+                                    <p class="red-ayuda">Las estaciones van en el orden en que las recorre el tren. Usa las flechas para moverlas.</p>
+                                    <ol class="red-recorrido" id="redRecorrido"></ol>
+
+                                    <div class="form-field">
+                                        <label for="lineaAgregar" id="lineaAgregarEtiqueta">Agregar estación al final</label>
+                                        <select id="lineaAgregar" class="select-input"></select>
+                                    </div>
+                                    <p class="red-ayuda">¿No está en la lista? Créala primero en la pestaña Estaciones.</p>
+                                    <p class="red-ayuda" id="redNotaProtegida" hidden>Esta línea tiene la tarifa especial de Arví, por eso no se puede eliminar.</p>
+                                </div>
+
+                                <div class="red-pie">
+                                    <button type="button" class="red-btn-peligro" id="btnEliminarLinea">
+                                        <i data-lucide="trash-2"></i>
+                                        Eliminar
+                                    </button>
+                                    <button type="button" class="btn-navigate" id="btnGuardarLinea">
+                                        <i data-lucide="check"></i>
+                                        Guardar línea
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ---------- PESTAÑA ESTACIONES ---------- -->
+                        <div class="red-tabpanel" id="redTabEstaciones">
+
+                            <div class="red-vista active" id="redVistaListaEstaciones">
+                                <div class="red-buscar">
+                                    <i data-lucide="search"></i>
+                                    <input type="text" id="redBuscarEstacion" placeholder="Buscar estación…" autocomplete="off">
+                                </div>
+                                <div class="red-scroll" id="redListaEstaciones">
+                                    <p class="red-vacio">Cargando estaciones…</p>
+                                </div>
+                                <div class="red-pie">
+                                    <button type="button" class="btn-navigate" id="btnNuevaEstacion">
+                                        <i data-lucide="plus"></i>
+                                        Nueva estación
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="red-vista" id="redVistaEditorEstacion">
+                                <div class="red-cab">
+                                    <button type="button" class="red-volver" id="btnVolverEstacion" aria-label="Volver a la lista de estaciones">
+                                        <i data-lucide="arrow-left"></i>
+                                    </button>
+                                    <h4 id="redTituloEstacion">Editar estación</h4>
+                                </div>
+
+                                <div class="red-scroll">
+                                    <div class="form-field">
+                                        <label for="estacionNombre">Nombre de la estación</label>
+                                        <input type="text" id="estacionNombre" class="form-input" maxlength="100" placeholder="Ej: La Aurora" autocomplete="off">
+                                    </div>
+
+                                    <div class="form-field" style="margin-top:14px;">
+                                        <label for="estacionDir">Dirección</label>
+                                        <input type="text" id="estacionDir" class="form-input" maxlength="255" placeholder="Ej: Carrera 51 # 41-43, Medellín" autocomplete="off">
+                                    </div>
+
+                                    <p class="red-ayuda red-ayuda--ubicacion">Ubicación: haz clic en el mapa o arrastra el punto verde.</p>
+                                    <div class="red-fila-2">
+                                        <div class="form-field">
+                                            <label for="estacionLat">Latitud</label>
+                                            <input type="number" id="estacionLat" class="form-input" step="any" placeholder="6.2472">
+                                        </div>
+                                        <div class="form-field">
+                                            <label for="estacionLon">Longitud</label>
+                                            <input type="number" id="estacionLon" class="form-input" step="any" placeholder="-75.5697">
+                                        </div>
+                                    </div>
+
+                                    <p class="red-ayuda" id="redEstacionLineas"></p>
+                                </div>
+
+                                <div class="red-pie">
+                                    <button type="button" class="red-btn-peligro" id="btnEliminarEstacion">
+                                        <i data-lucide="trash-2"></i>
+                                        Eliminar
+                                    </button>
+                                    <button type="button" class="btn-navigate" id="btnGuardarEstacion">
+                                        <i data-lucide="check"></i>
+                                        Guardar estación
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Mapa -->
+                    <section class="red-mapa-wrap" aria-label="Mapa de la red">
+                        <div id="adminMapa"></div>
+                        <p class="red-mapa-hint" id="redMapaHint"></p>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== REPORTES Y ESTADÍSTICAS ===== -->
+        <div id="view-reportes" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Reportes y estadísticas</h2>
+                    <p>Visión general del uso del sistema por todos los usuarios.</p>
+                </div>
+
+                <div class="history-stats">
+                    <div class="stat-box">
+                        <i data-lucide="users"></i>
+                        <div>
+                            <h4 id="statUsuariosTotal">…</h4>
+                            <span>Usuarios registrados</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i data-lucide="route"></i>
+                        <div>
+                            <h4 id="statViajesTotal">…</h4>
+                            <span>Viajes este mes</span>
+                        </div>
+                    </div>
+                    <div class="stat-box">
+                        <i data-lucide="piggy-bank"></i>
+                        <div>
+                            <h4 id="statIngresoTotal">…</h4>
+                            <span>Ingresos del mes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Estaciones más usadas</h4>
+                    <p class="admin-placeholder-text" id="rutasFrecuentesLista">Cargando…</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== USUARIOS REGISTRADOS ===== -->
+        <div id="view-usuarios" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Usuarios registrados</h2>
+                    <p>Consulta y administra las cuentas de los usuarios del sistema.</p>
+                </div>
+
+                <div class="admin-toolbar">
+                    <div class="admin-search">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="buscarUsuarios" placeholder="Buscar por nombre o correo...">
+                    </div>
+                </div>
+
+                <div class="simple-card admin-table-card">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Usuario</th>
+                                <th>Correo</th>
+                                <th>Registrado</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaUsuarios">
+                            <tr><td colspan="6" class="admin-placeholder-text">Cargando usuarios…</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="admin-table-hint">Datos reales desde ../PHP/usuarios_admin.php.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== AVISOS Y NOTIFICACIONES ===== -->
+        <div id="view-avisos" class="dash-view">
+            <div class="view-container">
+                <div class="view-header">
+                    <h2>Avisos y notificaciones</h2>
+                    <p>Envía un mensaje a todos los usuarios o a un grupo específico.</p>
+                </div>
+
+                <div class="simple-card">
+                    <div class="form-field">
+                        <label for="avisoDestino">Destinatarios</label>
+                        <select class="select-input" id="avisoDestino" style="width:100%;">
+                            <option value="todos" selected>Todos los usuarios</option>
+                            <option value="frecuente">Solo tarifa Frecuente</option>
+                            <option value="estudiantil">Solo tarifa Estudiantil</option>
+                            <option value="adulto_mayor">Solo Adulto Mayor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-field" style="margin-top:16px;">
+                        <label for="avisoTitulo">Título del aviso</label>
+                        <input type="text" id="avisoTitulo" class="form-input" placeholder="Ej: Cierre temporal Línea A">
+                    </div>
+
+                    <div class="form-field" style="margin-top:16px;">
+                        <label for="avisoMensaje">Mensaje</label>
+                        <textarea id="avisoMensaje" class="form-input admin-textarea" rows="4" placeholder="Escribe el mensaje que verán los usuarios..."></textarea>
+                    </div>
+
+                    <button class="btn-navigate" id="btnEnviarAviso" style="margin-top:20px;">
+                        <i data-lucide="send"></i>
+                        Enviar aviso
+                    </button>
+                </div>
+
+                <div class="simple-card" style="margin-top:16px;">
+                    <h4 class="admin-card-title">Avisos enviados recientemente</h4>
+                    <p class="admin-placeholder-text" id="avisosLista">Cargando…</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="admin.js"></script>
+</body>
+</html>
