@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<!-- SUM · Sistema de Ubicación Metro · index.html
+     Página de inicio (landing) del proyecto SUM, un sistema para orientarse en el Metro de
+     Medellín. Cada sección se presenta como una línea del metro: A = Beneficios, B = Cultura
+     Metro, K = Horarios, M = Contacto; y las tarjetas (A1, A2, B1...) son sus estaciones.
+     ESTRUCTURA: head (configuración) > sprite de iconos > header > menú móvil > main (hero,
+     beneficios, cultura, horarios) > footer > 3 modales > script.
+     ARCHIVOS RELACIONADOS: Style.css (diseño), Script.js (comportamiento) y ../PHP (login y
+     registro con base de datos). -->
+<head>
+    <!-- Codificación de caracteres: permite mostrar tildes y ñ correctamente. -->
+    <meta charset="UTF-8">
+    <!-- Hace la página responsive: se adapta al ancho real del celular. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Descripción que puede aparecer en los resultados de Google (SEO). -->
+    <meta name="description" content="SUM — Sistema de Ubicación Metro. Encuentra rutas, tarifas y horarios del Metro de Medellín.">
+    <!-- Favicon: ícono del tren -->
+    <link rel="icon" type="image/jpeg" href="icono.jpeg">
+
+    <!-- Tipografía: Space Grotesk (títulos), IBM Plex Sans (cuerpo), IBM Plex Mono (datos/rótulos) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Abre la conexión con Pixabay por adelantado para que las fotos del hero carguen más
+         rápido. -->
+    <link rel="preconnect" href="https://cdn.pixabay.com">
+    <!-- Título que se ve en la pestaña del navegador. -->
+    <title>SUM · Sistema de Ubicación Metro — Medellín</title>
+    <!-- Hoja de estilos: todo el diseño visual está en este archivo. -->
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body>
+    <!-- SPRITE DE ICONOS SVG
+         Todos los iconos se definen UNA sola vez aquí (cada <symbol> tiene un id) y se
+         reutilizan en la página con <use href="#i-nombre">. Ventaja: no dependen de internet
+         ni de librerías externas, y cargan más rápido. -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="i-train" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3.1V7a4 4 0 0 0 8 0V3.1"/>
+        <path d="m9 15-1-1"/>
+        <path d="m15 15 1-1"/>
+        <path d="M9 19c-2.8 0-5-2.2-5-5v-4a8 8 0 0 1 16 0v4c0 2.8-2.2 5-5 5Z"/>
+        <path d="m8 19-2 3"/>
+        <path d="m16 19 2 3"/>
+    </symbol>
+    <symbol id="i-log-in" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+        <polyline points="10 17 15 12 10 7"></polyline><line x1="15" x2="3" y1="12" y2="12"></line>
+    </symbol>
+    <symbol id="i-map-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>
+        <circle cx="12" cy="10" r="3"></circle>
+    </symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/>
+        <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>
+    </symbol>
+    <symbol id="i-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/>
+        <path d="M15 5.764v15"/>
+        <path d="M9 3.236v15"/>
+    </symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+    </symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+        <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+    </symbol>
+    <symbol id="i-volume-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/>
+        <line x1="22" x2="16" y1="9" y2="15"></line><line x1="16" x2="22" y1="9" y2="15"></line>
+    </symbol>
+    <symbol id="i-utensils-crossed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/>
+        <path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/>
+        <path d="m2.1 21.8 6.4-6.3"/>
+        <path d="m19 5-7 7"/>
+    </symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+    </symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+    </symbol>
+    <symbol id="i-twitter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+    </symbol>
+    <symbol id="i-facebook" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </symbol>
+    <symbol id="i-youtube" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/>
+        <path d="m10 15 5-3-5-3z"/>
+    </symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+        <circle cx="12" cy="12" r="3"></circle>
+    </symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
+        <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>
+        <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
+        <path d="m2 2 20 20"/>
+    </symbol>
+    <symbol id="i-user-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"></circle><line x1="19" x2="19" y1="8" y2="14"></line><line x1="22" x2="16" y1="11" y2="11"></line>
+    </symbol>
+    <symbol id="i-send" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z"/>
+        <path d="m21.854 2.147-10.94 10.939"/>
+    </symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m6 9 6 6 6-6"/>
+    </symbol>
+    </svg>
+
+
+    <!-- Enlace de accesibilidad: invisible hasta que se navega con el teclado (Tab); permite
+         saltar directo al contenido. -->
+    <a href="#hero" class="skip-link">Ir al contenido</a>
+
+    <!-- 1. ENCABEZADO (header)
+         Logo, menú de navegación tipo riel de metro (escritorio) y botón de inicio de
+         sesión. Queda fijo arriba al hacer scroll (position: sticky en el CSS). -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <img src="icono.jpeg" alt="" class="logo-mark" width="40" height="40">
+                <a href="#hero" class="logo-text">SUM</a>
+            </div>
+
+            <!-- Menú de escritorio
+                 Cada enlace es una parada (A, B, K, M) que lleva a una sección mediante su id. Solo
+                 se ve en escritorio; en celular se usa el menú móvil. -->
+            <nav class="metro-nav" aria-label="Navegación principal">
+                <span class="metro-nav-rail" aria-hidden="true"></span>
+                <!-- Barra verde que crece mientras se hace scroll (la controla setupNavProgress en
+                     Script.js). -->
+                <span class="metro-nav-progress" id="navProgress" aria-hidden="true"></span>
+                <span class="metro-nav-train" aria-hidden="true"><svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-train"/></svg></span>
+                <a href="#beneficios" class="metro-stop" data-line="a">
+                    <span class="stop-dot"><span class="stop-letter">A</span></span>
+                    <span class="stop-label">Beneficios</span>
+                </a>
+                <a href="#cultura" class="metro-stop" data-line="b">
+                    <span class="stop-dot"><span class="stop-letter">B</span></span>
+                    <span class="stop-label">Cultura Metro</span>
+                </a>
+                <a href="#horarios" class="metro-stop" data-line="k">
+                    <span class="stop-dot"><span class="stop-letter">K</span></span>
+                    <span class="stop-label">Horarios</span>
+                </a>
+                <a href="#Contacto" class="metro-stop" data-line="m">
+                    <span class="stop-dot"><span class="stop-letter">M</span></span>
+                    <span class="stop-label">Contáctanos</span>
+                </a>
+            </nav>
+
+            <!-- Abre el modal de inicio de sesión (función abrirLogin en Script.js). Solo visible en
+                 escritorio. -->
+            <button onclick="abrirLogin()" class="btn-login btn-login-desktop">
+                <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-log-in"/></svg>
+                Iniciar sesión
+            </button>
+
+            <!-- Botón hamburguesa: solo visible en celular y tablet; abre el menú móvil con
+                 toggleMenu(). -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MENÚ MÓVIL
+         Panel a pantalla completa, oculto por defecto. toggleMenu() (Script.js) le agrega la
+         clase 'active' para mostrarlo. Repite los mismos enlaces del menú de escritorio. -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <button class="close-btn" onclick="toggleMenu()" aria-label="Cerrar menú">✕</button>
+
+            <div class="logo mobile-logo">
+                <img src="icono.jpeg" alt="" class="logo-mark" width="40" height="40">
+                <span class="logo-text">SUM</span>
+            </div>
+
+            <nav class="metro-nav metro-nav-vertical" aria-label="Navegación móvil">
+                <span class="metro-nav-rail" aria-hidden="true"></span>
+                <a href="#beneficios" onclick="toggleMenu()" class="metro-stop" data-line="a">
+                    <span class="stop-dot"><span class="stop-letter">A</span></span>
+                    <span class="stop-label">Beneficios</span>
+                </a>
+                <a href="#cultura" onclick="toggleMenu()" class="metro-stop" data-line="b">
+                    <span class="stop-dot"><span class="stop-letter">B</span></span>
+                    <span class="stop-label">Cultura Metro</span>
+                </a>
+                <a href="#horarios" onclick="toggleMenu()" class="metro-stop" data-line="k">
+                    <span class="stop-dot"><span class="stop-letter">K</span></span>
+                    <span class="stop-label">Horarios</span>
+                </a>
+                <a href="#Contacto" onclick="toggleMenu()" class="metro-stop" data-line="m">
+                    <span class="stop-dot"><span class="stop-letter">M</span></span>
+                    <span class="stop-label">Contáctanos</span>
+                </a>
+            </nav>
+
+            <button onclick="abrirLogin(); toggleMenu();" class="btn-login btn-login-mobile">
+                <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-log-in"/></svg>
+                Iniciar sesión
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO PRINCIPAL
+         Contenido principal de la página (las secciones A, B y K). La sección M, Contacto,
+         es el footer. -->
+    <main>
+        <!-- 2. HERO (portada)
+             Es la portada: lo primero que ve el usuario. Fotos de fondo, título SUM, descripción
+             y botón que baja a la sección siguiente. -->
+        <section id="hero" class="hero">
+            <!-- Carrusel de fondo: 4 fotos de Medellín que se alternan con una animación CSS (sin
+                 JavaScript). La primera carga con prioridad (fetchpriority) y las demás de forma
+                 diferida (lazy). -->
+            <div class="hero-carousel" aria-hidden="true">
+                <img src="https://cdn.pixabay.com/photo/2017/06/22/03/40/medellin-2429413_1280.jpg" alt="" width="1280" height="853" decoding="async" fetchpriority="high">
+                <img src="https://cdn.pixabay.com/photo/2021/07/22/17/02/train-6485753_1280.jpg" alt="" width="1280" height="853" decoding="async" loading="lazy">
+                <img src="https://cdn.pixabay.com/photo/2022/04/18/13/00/medellin-7140474_1280.jpg" alt="" width="1280" height="853" decoding="async" loading="lazy">
+                <img src="https://cdn.pixabay.com/photo/2013/09/15/07/38/medellin-182352_1280.jpg" alt="" width="1280" height="853" decoding="async" loading="lazy">
+            </div>
+            <!-- Capas oscuras (degradado y viñeta) para que el texto blanco se lea bien sobre las
+                 fotos. -->
+            <div class="hero-overlay"></div>
+            <div class="hero-vignette" aria-hidden="true"></div>
+
+            <div class="hero-content">
+                <p class="hero-eyebrow">LÍNEA A · B · K · M — EN SERVICIO</p>
+                <h1 class="hero-title">SUM</h1>
+                <p class="hero-subtitle">Sistema de Ubicación Metro</p>
+                <p class="hero-description">
+                    Muévete por Medellín de forma <strong>económica y eficiente</strong>.
+                    Encuentra rutas, calcula tiempos y recorre el Metro con la certeza de un tablero de andén.
+                </p>
+                <!-- Botón de llamado a la acción (CTA): baja suavemente a la sección Beneficios. -->
+                <a href="#beneficios" class="btn-hero-cta">
+                    <span class="btn-hero-cta-tag">A1</span>
+                    <span class="btn-hero-cta-label">Conoce SUM</span>
+                    <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-chevron-down"/></svg>
+                </a>
+            </div>
+
+        </section>
+
+        <!-- 3. SECCIÓN A · BENEFICIOS  (id="beneficios")
+             Tres tarjetas con lo que ofrece el sistema: buscar ruta, ver tarifas y planificar
+             con el mapa. Las clases 'fade-in' hacen que aparezcan suavemente al hacer scroll
+             (Script.js). -->
+        <section id="beneficios" class="section">
+            <div class="container">
+                <p class="eyebrow fade-in">LÍNEA A — SERVICIOS</p>
+                <h2 class="section-title fade-in">¿Qué beneficios ofrece SUM?</h2>
+
+                <!-- Cuadrícula de tarjetas: 1 columna en celular y 3 en escritorio (se define en el
+                     CSS). -->
+                <div class="cards-grid">
+                    <!-- Cada tarjeta es una estación: código (A1), icono, título, texto y una línea
+                         decorativa (card-track) que se anima al pasar el mouse. -->
+                    <div class="card fade-in">
+                        <span class="card-stop">A1</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-map-pin"/></svg></span>
+                        <h3 class="card-title">Encuentra tu ruta</h3>
+                        <p class="card-text">Busca un recorrido a partir de tu lugar de origen y destino.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card fade-in">
+                        <span class="card-stop">A2</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-wallet"/></svg></span>
+                        <h3 class="card-title">Conoce las tarifas</h3>
+                        <p class="card-text">Consulta el precio correspondiente a tu recorrido.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card fade-in">
+                        <span class="card-stop">A3</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-map"/></svg></span>
+                        <h3 class="card-title">Planifica tu viaje</h3>
+                        <p class="card-text">Utiliza el mapa interactivo para orientarte dentro del sistema Metro.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. SECCIÓN B · REGLAS Y CULTURA METRO  (id="cultura")
+             Seis reglas de convivencia (B1 a B6) con fondo verde oscuro (section-alt). Algunos
+             iconos son imágenes PNG propias y el resto vienen del sprite SVG. -->
+        <section id="cultura" class="section section-alt">
+            <div class="container">
+                <p class="eyebrow fade-in">LÍNEA B — CULTURA METRO</p>
+                <h2 class="section-title fade-in">Reglas y Cultura Metro</h2>
+                <p class="section-subtitle fade-in">Consejos para un viaje respetuoso y agradable en el Metro de Medellín.</p>
+
+                <div class="cards-grid cards-grid-dense">
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B1</span>
+                        <!-- Iconos propios en PNG (corazon.png y bloqueo.png). Con alt vacío porque son
+                             decorativos: el título de la tarjeta ya describe la regla. -->
+                        <span class="card-icon-circle"><img src="corazon.png" alt="" class="card-icon" width="26" height="26" loading="lazy" decoding="async"></span>
+                        <h3 class="card-title">Respeto</h3>
+                        <p class="card-text">Trata a todos con amabilidad y respeta el espacio de los demás usuarios y empleados.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B2</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-clock"/></svg></span>
+                        <h3 class="card-title">Puntualidad</h3>
+                        <p class="card-text">Prepárate con tiempo y ayuda a que el servicio fluya de manera eficiente.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B3</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-leaf"/></svg></span>
+                        <h3 class="card-title">Cuidado del entorno</h3>
+                        <p class="card-text">Mantén limpias las estaciones, vagones y zonas aledañas. Cuida la infraestructura.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B4</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-volume-x"/></svg></span>
+                        <h3 class="card-title">Silencio</h3>
+                        <p class="card-text">Evita ruidos altos y mantén tus conversaciones en voz baja. Piensa en los demás.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B5</span>
+                        <span class="card-icon-circle"><svg class="lucide card-icon" width="24" height="24" aria-hidden="true"><use href="#i-utensils-crossed"/></svg></span>
+                        <h3 class="card-title">No comer</h3>
+                        <p class="card-text">Procura no consumir alimentos ni bebidas dentro del sistema de transporte.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                    <div class="card card-sign fade-in">
+                        <span class="card-stop">B6</span>
+                        <span class="card-icon-circle"><img src="bloqueo.png" alt="" class="card-icon" width="26" height="26" loading="lazy" decoding="async"></span>
+                        <h3 class="card-title">No fumar</h3>
+                        <p class="card-text">Está prohibido el uso de cigarrillos o vapeadores en todas las instalaciones.</p>
+                        <span class="card-track" aria-hidden="true"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SECCIÓN K · HORARIOS DE OPERACIÓN  (id="horarios")
+             Tabla con los horarios por tipo de día y por línea, y enlace al sitio oficial del
+             Metro para confirmar cambios. -->
+        <section id="horarios" class="section">
+            <div class="container container-narrow">
+                <p class="eyebrow fade-in">LÍNEA K — OPERACIÓN</p>
+                <h2 class="section-title fade-in">Horarios de operación</h2>
+                <p class="section-subtitle fade-in">Los horarios pueden variar ligeramente, pero generalmente son:</p>
+
+                <!-- Tabla de horarios
+                     table-wrapper permite scroll horizontal en celulares. Las filas se separan por tipo
+                     de día porque los horarios de domingos y festivos cambian según la línea. -->
+                <div class="table-wrapper fade-in">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Días</th>
+                                <th>Líneas</th>
+                                <th>Inicio</th>
+                                <th>Cierre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="cell-highlight">Lunes a sábados</td>
+                                <td><span class="line-tags">A B T-A H J K M O P 1 2</span></td>
+                                <td class="cell-time">3:30 a.m.</td>
+                                <td class="cell-time">11:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y festivos</td>
+                                <td><span class="line-tags">A B T-A O 1 2</span></td>
+                                <td class="cell-time">5:00 a.m.</td>
+                                <td class="cell-time">10:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y festivos</td>
+                                <td><span class="line-tags">K</span></td>
+                                <td class="cell-time">8:30 a.m.</td>
+                                <td class="cell-time">10:00 p.m.</td>
+                            </tr>
+                            <tr>
+                                <td class="cell-highlight">Domingos y festivos</td>
+                                <td><span class="line-tags">H J M P</span></td>
+                                <td class="cell-time">9:00 a.m.</td>
+                                <td class="cell-time">10:00 p.m.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="table-note fade-in">
+                    *Horarios sujetos a cambios por condiciones operacionales o eventos especiales.
+                    <a href="https://www.metrodemedellin.gov.co/" target="_blank" rel="noopener noreferrer">Consulta horarios oficiales aquí →</a>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER · SECCIÓN M · CONTACTO
+         Tres columnas: Contacto, Redes sociales y Legal. Su id="Contacto" es el destino del
+         enlace del menú y debe escribirse igual (con C mayúscula) en el HTML y en Script.js. -->
+    <footer id="Contacto" class="footer">
+        <span class="footer-rail" aria-hidden="true"></span>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3 class="footer-title">Contacto</h3>
+                    <ul class="footer-list">
+                        <li><svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-mail"/></svg> contactenos@metrodemedellin.gov.co</li>
+                        <li><svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-mail"/></svg> notificacionesjudiciales@metrodemedellin.gov.co</li>
+                        <li><svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-phone"/></svg> Línea de atención: (604) 444 95 98</li>
+                    </ul>
+                </div>
+
+                <div class="footer-col footer-col-center">
+                    <h3 class="footer-title">Síguenos</h3>
+                    <!-- target="_blank" abre cada red en otra pestaña; rel="noopener noreferrer" evita que
+                         la página abierta pueda controlar a esta (seguridad). -->
+                    <div class="social-icons">
+                        <a href="https://www.instagram.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-instagram"/></svg></a>
+                        <a href="https://x.com/metrodemedellin" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)"><svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-twitter"/></svg></a>
+                        <a href="https://www.facebook.com/metrodemedellin/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-facebook"/></svg></a>
+                        <a href="https://www.youtube.com/@metrodemedellin/videos" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-youtube"/></svg></a>
+                    </div>
+                </div>
+
+                <div class="footer-col footer-col-right">
+                    <!-- PENDIENTE: estos enlaces todavía apuntan a "#" porque aún no existen las páginas de
+                         términos, privacidad y transparencia. -->
+                    <h3 class="footer-title">Legal</h3>
+                    <ul class="footer-list">
+                        <li><a href="#">Términos y condiciones</a></li>
+                        <li><a href="#">Política de privacidad</a></li>
+                        <li><a href="#">Transparencia</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 Sistema de Ubicación Metro. Todos los derechos reservados. | Desarrollado por JJSSS.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1 · INICIO DE SESIÓN
+         Un modal es una ventana emergente: existe en el HTML pero está oculta (display: none
+         en el CSS) hasta que Script.js le agrega la clase 'active'. role="dialog" y aria-
+         modal ayudan a los lectores de pantalla. -->
+    <div class="modal-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="modal-box">
+            <span class="modal-tab">ACCESO</span>
+            <button class="modal-close" onclick="cerrarLogin()" aria-label="Cerrar">&times;</button>
+            <h2 id="loginTitle">Iniciar sesión</h2>
+
+            <!-- onsubmit llama a iniciarSesion(event) (Script.js), que envía los datos a login.php.
+                 El atributo required impide enviar campos vacíos: el navegador valida primero y
+                 luego corre el JS. -->
+            <form id="loginForm" onsubmit="iniciarSesion(event)">
+                <div class="input-group">
+                    <label for="loginUsername">Nombre de usuario</label>
+                    <input type="text" id="loginUsername" placeholder="usuario123" autocomplete="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <!-- Campo de contraseña con botón de ojo: togglePassword() alterna entre mostrarla y
+                         ocultarla. -->
+                    <div class="input-password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword', this)" aria-label="Mostrar contraseña">
+                            <svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-eye"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="forgot-link">
+                    <a href="#" onclick="event.preventDefault(); abrirRecuperar();">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <!-- Mensaje de error oculto: el JS lo muestra con el texto que devuelve el servidor. -->
+                <div class="error-msg" id="loginError">Usuario o contraseña incorrectos</div>
+
+                <button type="submit" class="btn-submit">
+                    <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-log-in"/></svg>
+                    Iniciar sesión
+                </button>
+            </form>
+
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="#" onclick="event.preventDefault(); abrirRegistro();">Regístrate aquí</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2 · REGISTRO
+         Cinco campos. Debajo de cada uno hay un cuadro de ayuda (field-info) con un
+         checklist que Script.js va marcando en vivo (○ ✓ ✕). Cada data-rule debe coincidir
+         con las claves de las funciones evaluar...() del JS. -->
+    <div class="modal-overlay" id="registerModal" role="dialog" aria-modal="true" aria-labelledby="registerTitle">
+        <div class="modal-box">
+            <span class="modal-tab">NUEVO PASAJERO</span>
+            <button class="modal-close" onclick="cerrarRegistro()" aria-label="Cerrar">&times;</button>
+            <h2 id="registerTitle">Crear cuenta</h2>
+
+            <!-- onsubmit llama a registrarUsuario(event): valida nombre, usuario y contraseña, y
+                 luego envía todo a registro.php. -->
+            <form id="registerForm" onsubmit="registrarUsuario(event)">
+                <div class="input-group">
+                    <label for="regNombre">Nombre completo</label>
+                    <input type="text" id="regNombre" placeholder="Juan Pérez" autocomplete="name" required>
+                    <!-- Cuadro de ayuda del campo: aparece al hacer clic en él y muestra los requisitos como
+                         checklist en vivo. -->
+                    <div class="field-info" id="infoNombre" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="soloLetras">Solo letras y espacios (incluye tildes y ñ)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="regUsername">Nombre de usuario</label>
+                    <input type="text" id="regUsername" placeholder="usuario123" autocomplete="username" required>
+                    <div class="field-info" id="infoUsuario" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="sinEspacios">Sin espacios</li>
+                            <li data-rule="soloAlfanum">Solo letras y números (sin símbolos)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="regEmail">Correo electrónico</label>
+                    <input type="email" id="regEmail" placeholder="ejemplo@correo.com" autocomplete="email" required>
+                    <div class="field-info" id="infoCorreo" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="formatoCorreo">Formato válido, ej. usuario@dominio.com</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <!-- minlength="9": el navegador exige 9 o más caracteres. Script.js además comprueba
+                         mayúscula, minúscula, número y símbolo. -->
+                    <label for="regPassword">Contraseña</label>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="regPassword" placeholder="••••••••" minlength="9" autocomplete="new-password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('regPassword', this)" aria-label="Mostrar contraseña">
+                            <svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-eye"/></svg>
+                        </button>
+                    </div>
+                    <div class="field-info" id="infoPassword" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="longitud">Más de 8 caracteres</li>
+                            <li data-rule="mayuscula">Una letra mayúscula (A-Z)</li>
+                            <li data-rule="minuscula">Una letra minúscula (a-z)</li>
+                            <li data-rule="numero">Un número (0-9)</li>
+                            <li data-rule="simbolo">Un símbolo especial (ej. !@#$%)</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="regConfirmPassword">Confirmar contraseña</label>
+                    <div class="input-password-wrapper">
+                        <input type="password" id="regConfirmPassword" placeholder="••••••••" autocomplete="new-password" required>
+                        <button type="button" class="toggle-password" onclick="togglePassword('regConfirmPassword', this)" aria-label="Mostrar contraseña">
+                            <svg class="lucide" width="24" height="24" aria-hidden="true"><use href="#i-eye"/></svg>
+                        </button>
+                    </div>
+                    <div class="field-info" id="infoConfirmPassword" role="tooltip">
+                        <ul class="checklist">
+                            <li data-rule="coincide">Coincide con la contraseña ingresada</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-msg" id="registerError">Las contraseñas no coinciden</div>
+
+                <button type="submit" class="btn-submit">
+                    <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-user-plus"/></svg>
+                    Registrarse
+                </button>
+            </form>
+
+            <div class="register-link">
+                ¿Ya tienes cuenta? <a href="#" onclick="event.preventDefault(); abrirLogin();">Inicia sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3 · RECUPERAR CONTRASEÑA
+         Pide el correo y muestra un mensaje de éxito. Por ahora es demostrativo: todavía no
+         envía ningún correo real. -->
+    <div class="modal-overlay" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+        <div class="modal-box">
+            <span class="modal-tab">RECUPERACIÓN</span>
+            <button class="modal-close" onclick="cerrarRecuperar()" aria-label="Cerrar">&times;</button>
+            <h2 id="forgotTitle">Recuperar contraseña</h2>
+            <p class="forgot-text">Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.</p>
+
+            <!-- onsubmit llama a recuperarPassword(event) (demostrativo por ahora). -->
+            <form id="forgotForm" onsubmit="recuperarPassword(event)">
+                <div class="input-group">
+                    <label for="forgotEmail">Correo electrónico</label>
+                    <input type="email" id="forgotEmail" placeholder="ejemplo@correo.com" autocomplete="email" required>
+                </div>
+
+                <div class="success-msg" id="forgotSuccess">Enlace enviado. Revisa tu correo.</div>
+
+                <button type="submit" class="btn-submit">
+                    <svg class="lucide icon-sm" width="24" height="24" aria-hidden="true"><use href="#i-send"/></svg>
+                    Enviar enlace
+                </button>
+            </form>
+
+            <div class="register-link">
+                <a href="#" onclick="event.preventDefault(); abrirLogin(); cerrarRecuperar();">Volver a iniciar sesión</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script.js va al final con defer: se descarga en paralelo y se ejecuta cuando el HTML
+         ya está listo. -->
+    <script src="Script.js" defer></script>
+</body>
+</html>
